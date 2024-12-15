@@ -658,7 +658,7 @@ getExpression <- function(future, ...) UseMethod("getExpression")
 #' @export
 getExpression.Future <- local({
 
-  tmpl_enter <- bquote_compile({
+  tmpl_enter <- future:::bquote_compile({
     base::local({
       ## covr: skip=4
       ## If 'future' is not installed on the worker, or a too old version
@@ -693,20 +693,20 @@ getExpression.Future <- local({
     })
   })
 
-  tmpl_enter_mccores <- bquote_compile({
+  tmpl_enter_mccores <- future:::bquote_compile({
     ## covr: skip=3
     .(enter)
     ...future.mc.cores.old <- base::getOption("mc.cores")
     base::options(mc.cores = .(mc.cores))
   })
 
-  tmpl_exit_mccores <- bquote_compile({
+  tmpl_exit_mccores <- future:::bquote_compile({
     ## covr: skip=2
     base::options(mc.cores = ...future.mc.cores.old)
     .(exit)
   })
 
-  tmpl_enter_rng <- bquote_compile({
+  tmpl_enter_rng <- future:::bquote_compile({
     ## covr: skip=2
     .(enter)
     ## NOTE: It is not needed to call RNGkind("L'Ecuyer-CMRG") here
@@ -715,7 +715,7 @@ getExpression.Future <- local({
     base::assign(".Random.seed", .(future$seed), envir = base::globalenv(), inherits = FALSE)
   })
 
-  tmpl_enter_packages <- bquote_compile({
+  tmpl_enter_packages <- future:::bquote_compile({
     ## covr: skip=3
     .(enter)      
     ## TROUBLESHOOTING: If the package fails to load, then library()
@@ -733,7 +733,7 @@ getExpression.Future <- local({
     })
   })
 
-  tmpl_enter_plan <- bquote_compile({
+  tmpl_enter_plan <- future:::bquote_compile({
     ## covr: skip=2
     .(enter)
     
@@ -749,7 +749,7 @@ getExpression.Future <- local({
   })
 
   ## Reset future strategies when done
-  tmpl_exit_plan <- bquote_compile({
+  tmpl_exit_plan <- future:::bquote_compile({
     ## covr: skip=2
     .(exit)
     ## Reset option 'future.plan' and env var 'R_FUTURE_PLAN'
@@ -765,7 +765,7 @@ getExpression.Future <- local({
     ## .(exit)
   })
 
-  function(future, expr = future$expr, local = future$local, stdout = future$stdout, conditionClasses = future$conditions, split = future$split, mc.cores = NULL, exit = NULL, ...) {
+  function(future, expr = future$expr, local = future$local, stdout = future$stdout, conditionClasses = future$conditions, seed = future$seed, split = future$split, mc.cores = NULL, exit = NULL, ...) {
     debug <- getOption("future.debug", FALSE)
     ##  mdebug("getExpression() ...")
   
@@ -835,11 +835,11 @@ getExpression.Future <- local({
     exit <- bquote_apply(tmpl_exit_plan)
 
     ## Set RNG seed?
-    if (is.numeric(future$seed)) {
+    if (is.numeric(seed)) {
       enter <- bquote_apply(tmpl_enter_rng)
     }
-  
-    expr <- makeExpression(expr = expr, local = local, stdout = stdout, conditionClasses = conditionClasses, split = split, enter = enter, exit = exit, ..., version = version)
+
+    expr <- makeExpression(expr = expr, local = local, stdout = stdout, conditionClasses = conditionClasses, split = split, enter = enter, exit = exit, ..., seed = seed, packages = pkgs, mc.cores = mc.cores, version = version)
     if (getOption("future.debug", FALSE)) mprint(expr)
   
   ##  mdebug("getExpression() ... DONE")

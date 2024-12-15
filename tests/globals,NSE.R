@@ -44,6 +44,8 @@ for (strategy in supportedStrategies()) {
   void %<-% { plan(sequential) }
   print(void)
 
+  options(future.globals.onMissing = NULL)
+
   message(sprintf("- Strategy: %s ... DONE", strategy))
 }
 

@@ -606,7 +606,7 @@ requestNode <- function(await, workers, timeout = getOption("future.wait.timeout
 
 #' @export
 getExpression.ClusterFuture <- local({
-  tmpl_expr_conditions <- bquote_compile({
+  tmpl_expr_conditions <- future:::bquote_compile({
     ...future.makeSendCondition <- base::local({
       sendCondition <- NULL
 

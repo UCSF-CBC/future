@@ -299,7 +299,7 @@ result.MulticoreFuture <- function(future, ...) {
 
 #' @export
 getExpression.MulticoreFuture <- local({
-  tmpl_expr_disable_multithreading <- bquote_compile({
+  tmpl_expr_disable_multithreading <- future:::bquote_compile({
     ## Force single-threaded OpenMP, iff needed
     old_omp_threads <- RhpcBLASctl::omp_get_max_threads()
     if (old_omp_threads > 1L) {

@@ -101,13 +101,13 @@ resolved.UniprocessFuture <- function(x, ...) {
 
 #' @export
 getExpression.UniprocessFuture <- local({
-  tmpl_exit_rng_remove <- bquote_compile({
+  tmpl_exit_rng_remove <- future:::bquote_compile({
     .(exit)
     RNGkind(.(okind))
     base::rm(list = ".Random.seed", envir = base::globalenv(), inherits = FALSE)
   })
   
-  tmpl_exit_rng_undo <- bquote_compile({
+  tmpl_exit_rng_undo <- future:::bquote_compile({
     base::assign(".Random.seed", .(oseed), envir = base::globalenv(), inherits = FALSE)
     .(exit)
   })

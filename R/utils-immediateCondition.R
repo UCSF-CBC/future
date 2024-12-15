@@ -170,7 +170,7 @@ save_rds <- function(object, pathname, ...) {
 
 
 
-tmpl_expr_send_immediateConditions_via_file <- bquote_compile({
+tmpl_expr_send_immediateConditions_via_file <- future:::bquote_compile({
   withCallingHandlers({
     .(expr)
   }, immediateCondition = function(cond) {
