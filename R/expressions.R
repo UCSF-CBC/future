@@ -463,8 +463,8 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
   ...future.result$finished <- base::Sys.time()
 
   ## Undo .Random.seed
-  genv <- base::globalenv()
-  base::RNGkind(...future.rngkind)
+  genv <- globalenv()
+  RNGkind(...future.rngkind)
   if (is.null(...future.rng)) {
     if (exists(".Random.seed", envir = genv, inherits = FALSE)) {
       rm(list = ".Random.seed", envir = genv, inherits = FALSE)

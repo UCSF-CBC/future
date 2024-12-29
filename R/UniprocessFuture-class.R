@@ -100,34 +100,12 @@ resolved.UniprocessFuture <- function(x, ...) {
 }
 
 #' @export
-getExpression.UniprocessFuture <- local({
-  tmpl_exit_rng_remove <- future:::bquote_compile({
-    .(exit)
-    RNGkind(.(okind))
-    base::rm(list = ".Random.seed", envir = base::globalenv(), inherits = FALSE)
-  })
-  
-  tmpl_exit_rng_undo <- future:::bquote_compile({
-    base::assign(".Random.seed", .(oseed), envir = base::globalenv(), inherits = FALSE)
-    .(exit)
-  })
-
-function(future, immediateConditions = TRUE, exit = NULL, ...) {
+getExpression.UniprocessFuture <- function(future, immediateConditions = TRUE, ...) {
   ## Assert that no arguments but the first is passed by position
   assert_no_positional_args_but_first()
-
-  ## Preserve RNG state?
-  oseed <- get_random_seed()
-  if (is.null(oseed)) {
-    okind <- RNGkind()[1]
-    exit <- bquote_apply(tmpl_exit_rng_remove)
-  } else {
-    exit <- bquote_apply(tmpl_exit_rng_undo)
-  }
-
-  NextMethod(immediateConditions = immediateConditions, exit = exit)
+  NextMethod(immediateConditions = immediateConditions)
 }
-})
+
 
 
 #' @return
