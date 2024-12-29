@@ -80,226 +80,73 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
     is.null(mc.cores) || (is.numeric(mc.cores) && length(mc.cores) == 1L && !is.na(mc.cores) && mc.cores >= 1)
   )
 
-#  packages <- c(packages, "future")
-
-  conditionClassesExclude <- attr(conditionClasses, "exclude", exact = TRUE)
-  muffleInclude <- attr(conditionClasses, "muffleInclude", exact = TRUE)
-  if (is.null(muffleInclude)) muffleInclude <- "^muffle"
-
-  ## Capture standard output?
-  if (is.na(stdout)) {  ## stdout = NA
-    ## Don't capture, but also don't block any output
-  } else {
-    if (stdout) {  ## stdout = TRUE
-      ## Capture all output
-      ## NOTE: Capturing to a raw connection is much more efficient
-      ## than to a character connection, cf.
-      ## https://www.jottr.org/2014/05/26/captureoutput/
-      ...future.stdout <- rawConnection(raw(0L), open = "w")
-    } else {  ## stdout = FALSE
-      ## Silence all output by sending it to the void
-      ...future.stdout <- file(
-        switch(.Platform$OS.type, windows = "NUL", "/dev/null"),
-        open = "w"
-      )
-    }
-    sink(...future.stdout, type = "output", split = split)
-    on.exit(if (!is.null(...future.stdout)) {
-      sink(type = "output", split = split)
-      close(...future.stdout)
-    }, add = TRUE)
-  }
-
-  ...future.frame <- sys.nframe()
-  ...future.conditions <- list()
-  ...future.rngkind <- RNGkind()[1]
-  ...future.rng <- globalenv()$.Random.seed
-
-  if (is.numeric(seed)) {
-    genv <- globalenv()
-    genv$.Random.seed <- seed
-  }
-
-  ## Temporarily limit R option 'mc.cores'?
-  if (!is.null(mc.cores)) {
-    ...future.mc.cores.old <- getOption("mc.cores")
-    options(mc.cores = mc.cores)
-  }
-
-  ## Record R options and environment variables
-  ## Note, we do this _after_ loading and attaching packages, in
-  ## case they set options/env vars needed for the session, e.g.
-  ## https://github.com/Rdatatable/data.table/issues/5375
-  ...future.oldOptions <- as.list(.Options)
-  ...future.oldEnvVars <- Sys.getenv()
-
-  ## covr: skip=7
-  options(
-    ## Prevent .future.R from being source():d when future is attached
-    future.startup.script          = FALSE,
-    
-    ## Assert globals when future is created (or at run time)?
-    future.globals.onMissing       = globals.onMissing,
-    
-    ## Pass down other future.* options
-    future.globals.maxSize         = getOption("future.globals.maxSize"),
-    future.globals.method          = getOption("future.globals.method"),
-    future.globals.onReference     = getOption("future.globals.onReference"),
-    future.globals.resolve         = getOption("future.globals.resolve"),
-    future.resolve.recursive       = getOption("future.resolve.recursive"),
-    future.rng.onMisuse            = getOption("future.rng.onMisuse"),
-    future.rng.onMisuse.keepFuture = getOption("future.rng.onMisuse.keepFuture"),
-    future.stdout.windows.reencode = getOption("future.stdout.windows.reencode"),
-
-    ## Other options relevant to making futures behave consistently
-    ## across backends
-    width = getOption("width")
-  )
-
-  options(
-    ## Prevent .future.R from being source():d when future is attached
-    future.startup.script          = FALSE,
-    
-    ## Assert globals when future is created (or at run time)?
-    future.globals.onMissing       = globals.onMissing
-  )
-  
-  ## Record above future options
-  ...future.futureOptionsAdded <- setdiff(names(.Options), names(...future.oldOptions))
-
-  ## Record workding directory
-  ...future.workdir <- getwd()
-
-  if (globalenv) {
-    ## Record names of variables in the global environment
-    ...future.globalenv.names <- c(names(.GlobalEnv), "...future.value", "...future.globalenv.names", ".Random.seed")
-  }
-
-  ## Record the original future strategy set on this worker
-  ...future.plan.old <- getOption("future.plan")
-  ...future.plan.old.envvar <- Sys.getenv("R_FUTURE_PLAN", NA_character_)
-  ...future.strategy.old <- plan("list")
-    
-  ## Prevent 'future.plan' / R_FUTURE_PLAN settings from being nested
-  options(future.plan = NULL)
-  Sys.unsetenv("R_FUTURE_PLAN")
-
-  ## Use the next-level-down ("popped") future strategy
-  ...future.oldPlan <- plan(strategiesR, .cleanup = FALSE, .init = FALSE)
 
   ## Start time for future evaluation
   ...future.startTime <- Sys.time()
 
+
+  ## -----------------------------------------------------------------
+  ## Load and attached packages
+  ## -----------------------------------------------------------------
   ## TROUBLESHOOTING: If the package fails to load, then library()
   ## suppress that error and generates a generic much less
   ## informative error message.  Because of this, we load the
   ## namespace first (to get a better error message) and then
-  ## calls library(), which attaches the package. /HB 2016-06-16
+  ## call library(), which attaches the package. /HB 2016-06-16
   ## NOTE: We use local() here such that 'pkg' is not assigned
   ##       to the future environment. /HB 2016-07-03
   if (length(packages) > 0L) {
-    local({
+    res <- tryCatch({
       for (pkg in packages) {
         loadNamespace(pkg)
         library(pkg, character.only = TRUE)
       }
-    })
+      NULL
+    }, error = identity)
+    if (inherits(res, "error")) {
+      res <- FutureResult(conditions = list(res), started = ...future.startTime)
+      return(res)
+    }
   }
 
-  ## NOTE: We don't want to use local(body) w/ on.exit() because
-  ## evaluation in a local is optional, cf. argument 'local'.
-  ## If this was mandatory, we could.  Instead we use
-  ## a tryCatch() statement. /HB 2016-03-14
-  ...future.result <- tryCatch({
-    withCallingHandlers({
-      ...future.value <- withVisible(eval(expr, envir = envir))
-      FutureResult(
-        value = ...future.value$value,
-        visible = ...future.value$visible,
-        rng = !identical(globalenv()$.Random.seed, ...future.rng),
-        globalenv = if (globalenv) list(added = setdiff(names(.GlobalEnv), ...future.globalenv.names)) else NULL,
-        started = ...future.startTime,
-        version = "1.8"
-      )
-    }, condition = local({
-      sysCalls <- function(calls = sys.calls(), from = 1L) {
-        calls[seq.int(from = from + skip[1L], to = length(calls) - skip[2L])]
+
+  ## -----------------------------------------------------------------
+  ## Preserve RNG state
+  ## -----------------------------------------------------------------
+  ...future.rngkind <- RNGkind()[1]
+  ...future.rng <- globalenv()$.Random.seed
+  on.exit({
+    ## Undo .Random.seed
+    genv <- globalenv()
+    RNGkind(...future.rngkind)
+    if (is.null(...future.rng)) {
+      if (exists(".Random.seed", envir = genv, inherits = FALSE)) {
+        rm(list = ".Random.seed", envir = genv, inherits = FALSE)
       }
-      
-      function(cond) {
-        is_error <- inherits(cond, "error")
-          
-        ## Ignore condition?
-        ignore <- !is_error &&
-                  !is.null(conditionClassesExclude) && 
-                  inherits(cond, conditionClassesExclude)
-        
-        ## Handle error:s specially
-        if (is_error) {
-          sessionInformation <- function() {
-            list(
-              r          = R.Version(),
-              locale     = Sys.getlocale(),
-              rngkind    = RNGkind(),
-              namespaces = loadedNamespaces(),
-              search     = search(),
-              system     = Sys.info()
-            )
-          }
-         ## Record condition
-          ...future.conditions[[length(...future.conditions) + 1L]] <<- list(
-            condition = cond,
-            calls     = c(sysCalls(from = ...future.frame), cond$call),
-            session   = sessionInformation(),
-            timestamp = Sys.time(),
-            signaled  = 0L
-          )
-      
-          signalCondition(cond)
-        } else if (!ignore &&
-                   !is.null(conditionClasses) &&
-                   inherits(cond, conditionClasses)
-                  ) {
-          ## Relay 'immediateCondition' conditions immediately?
-          ## If so, then do not muffle it and flag it as signalled
-          ## already here.
-          signal <- immediateConditions && inherits(cond, immediateConditionClasses)
-          ## Record condition
-          ...future.conditions[[length(...future.conditions) + 1L]] <<- list(
-            condition = cond,
-            signaled = as.integer(signal)
-          )
-          if (immediateConditions && !split && !signal) {
-            muffleCondition(cond, pattern = muffleInclude)
-          }
-        } else {
-          if (!split && !is.null(conditionClasses)) {
-            ## Muffle all non-captured conditions
-            muffleCondition(cond, pattern = muffleInclude)
-          }
-        }
-      } ## function(cond)
-    })) ## local() + withCallingHandlers()
-  }, error = function(ex) {
-    structure(list(
-      value = NULL,
-      visible = NULL,
-      conditions = ...future.conditions,
-      rng = !identical(globalenv()$.Random.seed, ...future.rng),
-      started = ...future.startTime,
-      finished = Sys.time(),
-      session_uuid = NA_character_,
-      version = "1.8"
-    ), class = "FutureResult")
-  }, finally = {
-    ## Reset working directory
-    if (!identical(...future.workdir, getwd())) setwd(...future.workdir)
-    
-    ## Reset R option 'mc.cores'
-    if (!is.null(mc.cores)) {
-      options(mc.cores = ...future.mc.cores.old)
+    } else {
+      assign(".Random.seed", ...future.rng, envir = genv, inherits = FALSE)
     }
-    
+  }, add = TRUE)
+
+
+  ## -----------------------------------------------------------------
+  ## Preserve R option 'mc.cores'
+  ## -----------------------------------------------------------------
+  ...future.mc.cores.old <- getOption("mc.cores")
+  on.exit({
+    ## Reset R option 'mc.cores'
+    options(mc.cores = ...future.mc.cores.old)
+  }, add = TRUE)
+
+
+  ## -----------------------------------------------------------------
+  ## Preserve R options
+  ## -----------------------------------------------------------------
+  ## Note, we do this _after_ loading and attaching packages, in
+  ## case they set options/env vars needed for the session, e.g.
+  ## https://github.com/Rdatatable/data.table/issues/5375
+  ...future.oldOptions <- as.list(.Options)
+  on.exit({  
     ## (a) Reset options
     ## WORKAROUND: Do not reset 'nwarnings' unless changed, because
     ## that will, as documented, trigger any warnings collected
@@ -329,7 +176,17 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
     ##    names(opts) <- diff
     ##    options(opts)
     ## }
+  }, add = TRUE)
 
+
+  ## -----------------------------------------------------------------
+  ## Preserve environment variables
+  ## -----------------------------------------------------------------
+  ## Note, we do this _after_ loading and attaching packages, in
+  ## case they set options/env vars needed for the session, e.g.
+  ## https://github.com/Rdatatable/data.table/issues/5375
+  ...future.oldEnvVars <- Sys.getenv()
+  on.exit({  
     ## (d) Reset environment variables
     if (.Platform$OS.type == "windows") {
       ## On MS Windows, there are two special cases to consider:
@@ -408,14 +265,64 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
     ## (d) Remove any environment variables added
     ## diff <- setdiff(names(Sys.getenv()), names(...future.oldEnvVars))
     ## Sys.unsetenv(diff)
+  }, add = TRUE)
 
+
+  ## covr: skip=7
+  options(
+    ## Prevent .future.R from being source():d when future is attached
+    future.startup.script          = FALSE,
+    
+    ## Assert globals when future is created (or at run time)?
+    future.globals.onMissing       = globals.onMissing,
+    
+    ## Pass down other future.* options
+    future.globals.maxSize         = getOption("future.globals.maxSize"),
+    future.globals.method          = getOption("future.globals.method"),
+    future.globals.onReference     = getOption("future.globals.onReference"),
+    future.globals.resolve         = getOption("future.globals.resolve"),
+    future.resolve.recursive       = getOption("future.resolve.recursive"),
+    future.rng.onMisuse            = getOption("future.rng.onMisuse"),
+    future.rng.onMisuse.keepFuture = getOption("future.rng.onMisuse.keepFuture"),
+    future.stdout.windows.reencode = getOption("future.stdout.windows.reencode"),
+
+    ## Other options relevant to making futures behave consistently
+    ## across backends
+    width                          = getOption("width")
+  )
+
+
+  ## -----------------------------------------------------------------
+  ## Preserve future options added
+  ## -----------------------------------------------------------------
+  ...future.futureOptionsAdded <- setdiff(names(.Options), names(...future.oldOptions))
+  on.exit({
     ## Remove any "future" options added
     if (length(...future.futureOptionsAdded) > 0L) {
       opts <- vector("list", length = length(...future.futureOptionsAdded))
       names(opts) <- ...future.futureOptionsAdded
       options(opts)
     }
+  }, add = TRUE)
+  
 
+  ## -----------------------------------------------------------------
+  ## Preserve working directory
+  ## -----------------------------------------------------------------
+  ...future.workdir <- getwd()
+  on.exit({
+    setwd(...future.workdir)
+  }, add = TRUE)
+
+
+  ## -----------------------------------------------------------------
+  ## Preserve future strategy
+  ## -----------------------------------------------------------------
+  ## Record the original future strategy set on this worker
+  ...future.plan.old <- getOption("future.plan")
+  ...future.plan.old.envvar <- Sys.getenv("R_FUTURE_PLAN", NA_character_)
+  ...future.strategy.old <- plan("list")
+  on.exit({
     ## Revert to the original future strategy
     ## Reset option 'future.plan' and env var 'R_FUTURE_PLAN'
     options(future.plan = ...future.plan.old)
@@ -425,8 +332,149 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
     } else {
       Sys.setenv(R_FUTURE_PLAN = ...future.plan.old.envvar)
     }
-  }) ## tryCatch(..., finally = { ... })
+  }, add = TRUE)
   
+
+  ## -----------------------------------------------------------------
+  ## Evaluate future in the correct context
+  ## -----------------------------------------------------------------
+  if (globalenv) {
+    ## Record names of variables in the global environment
+    ...future.globalenv.names <- c(names(.GlobalEnv), "...future.value", "...future.globalenv.names", ".Random.seed")
+  }
+
+  ## Ignore, capture or discard standard output?
+  if (is.na(stdout)) {  ## stdout = NA
+    ## Don't capture, but also don't block any output
+  } else {
+    if (stdout) {  ## stdout = TRUE
+      ## Capture all output
+      ## NOTE: Capturing to a raw connection is much more efficient
+      ## than to a character connection, cf.
+      ## https://www.jottr.org/2014/05/26/captureoutput/
+      ...future.stdout <- rawConnection(raw(0L), open = "w")
+    } else {  ## stdout = FALSE
+      ## Silence all output by sending it to the void
+      ...future.stdout <- file(
+        switch(.Platform$OS.type, windows = "NUL", "/dev/null"),
+        open = "w"
+      )
+    }
+    sink(...future.stdout, type = "output", split = split)
+    on.exit(if (!is.null(...future.stdout)) {
+      sink(type = "output", split = split)
+      close(...future.stdout)
+    }, add = TRUE)
+  }
+
+  ## Prevent 'future.plan' / R_FUTURE_PLAN settings from being nested
+  options(future.plan = NULL)
+  Sys.unsetenv("R_FUTURE_PLAN")
+
+  ## Temporarily set R option 'mc.cores'?
+  if (!is.null(mc.cores)) {
+    options(mc.cores = mc.cores)
+  }
+
+  ## Set RNG seed?
+  if (is.numeric(seed)) {
+    genv <- globalenv()
+    genv$.Random.seed <- seed
+  }
+
+  conditionClassesExclude <- attr(conditionClasses, "exclude", exact = TRUE)
+  muffleInclude <- attr(conditionClasses, "muffleInclude", exact = TRUE)
+  if (is.null(muffleInclude)) muffleInclude <- "^muffle"
+
+  ...future.frame <- sys.nframe()
+  ...future.conditions <- list()
+
+  ## NOTE: We don't want to use local(body) w/ on.exit() because
+  ## evaluation in a local is optional, cf. argument 'local'.
+  ## If this was mandatory, we could.  Instead we use
+  ## a tryCatch() statement. /HB 2016-03-14
+  ...future.result <- tryCatch({
+    withCallingHandlers({
+      ...future.value <- withVisible(eval(expr, envir = envir))
+      FutureResult(
+        value = ...future.value$value,
+        visible = ...future.value$visible,
+        rng = !identical(globalenv()$.Random.seed, ...future.rng),
+        globalenv = if (globalenv) list(added = setdiff(names(.GlobalEnv), ...future.globalenv.names)) else NULL,
+        started = ...future.startTime
+      )
+    }, condition = local({
+      sysCalls <- function(calls = sys.calls(), from = 1L) {
+        calls[seq.int(from = from + skip[1L], to = length(calls) - skip[2L])]
+      }
+      
+      function(cond) {
+        is_error <- inherits(cond, "error")
+          
+        ## Ignore condition?
+        ignore <- !is_error &&
+                  !is.null(conditionClassesExclude) && 
+                  inherits(cond, conditionClassesExclude)
+        
+        ## Handle error:s specially
+        if (is_error) {
+          sessionInformation <- function() {
+            list(
+              r          = R.Version(),
+              locale     = Sys.getlocale(),
+              rngkind    = RNGkind(),
+              namespaces = loadedNamespaces(),
+              search     = search(),
+              system     = Sys.info()
+            )
+          }
+          
+          ## Record condition
+          ...future.conditions[[length(...future.conditions) + 1L]] <<- list(
+            condition = cond,
+            calls     = c(sysCalls(from = ...future.frame), cond$call),
+            session   = sessionInformation(),
+            timestamp = Sys.time(),
+            signaled  = 0L
+          )
+      
+          signalCondition(cond)
+        } else if (!ignore &&
+                   !is.null(conditionClasses) &&
+                   inherits(cond, conditionClasses)
+                  ) {
+          ## Relay 'immediateCondition' conditions immediately?
+          ## If so, then do not muffle it and flag it as signalled
+          ## already here.
+          signal <- immediateConditions && inherits(cond, immediateConditionClasses)
+          ## Record condition
+          ...future.conditions[[length(...future.conditions) + 1L]] <<- list(
+            condition = cond,
+            signaled = as.integer(signal)
+          )
+          if (immediateConditions && !split && !signal) {
+            muffleCondition(cond, pattern = muffleInclude)
+          }
+        } else {
+          if (!split && !is.null(conditionClasses)) {
+            ## Muffle all non-captured conditions
+            muffleCondition(cond, pattern = muffleInclude)
+          }
+        }
+      } ## function(cond)
+    })) ## local() + withCallingHandlers()
+  }, error = function(ex) {
+    FutureResult(
+      rng = !identical(globalenv()$.Random.seed, ...future.rng),
+      globalenv = if (globalenv) list(added = setdiff(names(.GlobalEnv), ...future.globalenv.names)) else NULL,
+      started = ...future.startTime
+    )
+  }) ## tryCatch()
+  
+
+  ## -----------------------------------------------------------------
+  ## Get captured standard output?
+  ## -----------------------------------------------------------------
   if (!is.na(stdout)) {
     sink(type = "output", split = split)
     if (stdout) {
@@ -442,17 +490,6 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
 
   ...future.result$conditions <- ...future.conditions
   ...future.result$finished <- Sys.time()
-
-  ## Undo .Random.seed
-  genv <- globalenv()
-  RNGkind(...future.rngkind)
-  if (is.null(...future.rng)) {
-    if (exists(".Random.seed", envir = genv, inherits = FALSE)) {
-      rm(list = ".Random.seed", envir = genv, inherits = FALSE)
-    }
-  } else {
-    assign(".Random.seed", ...future.rng, envir = genv, inherits = FALSE)
-  }
 
   ...future.result
 } ## evalFuture()
