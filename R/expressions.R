@@ -112,6 +112,7 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
 
   ...future.frame <- base::sys.nframe()
   ...future.conditions <- base::list()
+  ...future.rngkind <- base::RNGkind()[1]
   ...future.rng <- base::globalenv()$.Random.seed
 
   if (is.numeric(seed)) {
@@ -460,7 +461,18 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
 
   ...future.result$conditions <- ...future.conditions
   ...future.result$finished <- base::Sys.time()
-  
+
+  ## Undo .Random.seed
+  genv <- base::globalenv()
+  base::RNGkind(...future.rngkind)
+  if (is.null(...future.rng)) {
+    if (exists(".Random.seed", envir = genv, inherits = FALSE)) {
+      rm(list = ".Random.seed", envir = genv, inherits = FALSE)
+    }
+  } else {
+    assign(".Random.seed", ...future.rng, envir = genv, inherits = FALSE)
+  }
+
   ...future.result
 } ## evalFuture()
 
