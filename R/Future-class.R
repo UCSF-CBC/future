@@ -668,7 +668,10 @@ getExpression.Future <- function(future, expr = future$expr, local = future$loca
     warning(FutureWarning("Future version was not set. Using default %s",
                           sQuote(version)))
   }
-  
+
+  ## Globals needed by the future
+  globals <- globals(future)
+
   ## Packages needed by the future
   pkgs <- packages(future)
   if (length(pkgs) > 0) {
@@ -700,7 +703,7 @@ getExpression.Future <- function(future, expr = future$expr, local = future$loca
     pkgs <- unique(c(pkgs, pkgsS))
   }
 
-  expr <- makeExpression(expr = expr, local = local, stdout = stdout, conditionClasses = conditionClasses, split = split, enter = NULL, exit = exit, ..., seed = seed, packages = pkgs, mc.cores = mc.cores, version = version)
+  expr <- makeExpression(expr = expr, local = local, stdout = stdout, conditionClasses = conditionClasses, split = split, globals = globals, enter = NULL, exit = exit, ..., seed = seed, packages = pkgs, mc.cores = mc.cores, version = version)
   if (getOption("future.debug", FALSE)) mprint(expr)
 
   ##  mdebug("getExpression() ... DONE")
