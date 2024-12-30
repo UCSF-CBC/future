@@ -5,7 +5,7 @@ makeExpression <- local({
 
   tmpl_expr_evaluate2 <- future:::bquote_compile({
     ## Evaluate future   
-    future:::evalFuture(expr = quote(.(expr)), stdout = .(stdout), conditionClasses = .(conditionClasses), split = .(split), immediateConditions = .(immediateConditions), immediateConditionClasses = .(immediateConditionClasses), globals.onMissing = .(globals.onMissing), globalenv = .(globalenv), skip = .(skip), packages = .(packages), seed = .(seed), strategiesR = .(strategiesR), mc.cores = .(mc.cores))
+    future:::evalFuture(expr = quote(.(expr)), stdout = .(stdout), conditionClasses = .(conditionClasses), split = .(split), immediateConditions = .(immediateConditions), immediateConditionClasses = .(immediateConditionClasses), globals.onMissing = .(globals.onMissing), globalenv = .(globalenv), skip = .(skip), packages = .(packages), seed = .(seed), strategiesR = .(strategiesR), forwardOptions = .(forwardOptions), mc.cores = .(mc.cores))
   })
 
 
@@ -55,6 +55,25 @@ makeExpression <- local({
       packages <- unique(c(packages, pkgsS))
     }
 
+    forwardOptions <- list(
+      ## Assert globals when future is created (or at run time)?
+      future.globals.onMissing       = globals.onMissing,
+    
+      ## Pass down other future.* options
+      future.globals.maxSize         = getOption("future.globals.maxSize"),
+      future.globals.method          = getOption("future.globals.method"),
+      future.globals.onReference     = getOption("future.globals.onReference"),
+      future.globals.resolve         = getOption("future.globals.resolve"),
+      future.resolve.recursive       = getOption("future.resolve.recursive"),
+      future.rng.onMisuse            = getOption("future.rng.onMisuse"),
+      future.rng.onMisuse.keepFuture = getOption("future.rng.onMisuse.keepFuture"),
+      future.stdout.windows.reencode = getOption("future.stdout.windows.reencode"),
+
+      ## Other options relevant to making futures behave consistently
+      ## across backends
+      width                          = getOption("width")
+    )
+
     expr <- bquote_apply(tmpl_expr_evaluate2)
 
     expr
@@ -63,10 +82,7 @@ makeExpression <- local({
 
 
 
-
-
-
-evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), split = FALSE, immediateConditions = NULL, immediateConditionClasses = character(0L), globals.onMissing = getOption("future.globals.onMissing", NULL), globalenv = (getOption("future.globalenv.onMisuse", "ignore") != "ignore"), skip = NULL, packages = NULL, seed = NULL, mc.cores = NULL, strategiesR = future::sequential, envir = parent.frame()) {
+evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), split = FALSE, immediateConditions = NULL, immediateConditionClasses = character(0L), globals.onMissing = getOption("future.globals.onMissing", NULL), globalenv = (getOption("future.globalenv.onMisuse", "ignore") != "ignore"), skip = NULL, packages = NULL, seed = NULL, mc.cores = NULL, forwardOptions = NULL, strategiesR = future::sequential, envir = parent.frame()) {
   stop_if_not(
     length(stdout) == 1L && is.logical(stdout),
     length(split) == 1L && is.logical(split) && !is.na(split),
@@ -86,8 +102,24 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
 
 
   ## -----------------------------------------------------------------
-  ## Load and attached packages
+  ## Record current state
   ## -----------------------------------------------------------------
+  ## Current working directory
+  ...future.workdir <- getwd()
+  
+  ## mc.cores
+  ...future.mc.cores.old <- getOption("mc.cores")
+
+  ## RNG state
+  ...future.rngkind <- RNGkind()[1]
+  ...future.rng <- globalenv()$.Random.seed
+  
+  ## Record the original future strategy set on this worker
+  ...future.plan.old <- getOption("future.plan")
+  ...future.plan.old.envvar <- Sys.getenv("R_FUTURE_PLAN", NA_character_)
+  ...future.strategy.old <- plan("list")
+
+  ## Load and attached packages
   ## TROUBLESHOOTING: If the package fails to load, then library()
   ## suppress that error and generates a generic much less
   ## informative error message.  Because of this, we load the
@@ -109,84 +141,22 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
     }
   }
 
-
-  ## -----------------------------------------------------------------
-  ## Preserve RNG state
-  ## -----------------------------------------------------------------
-  ...future.rngkind <- RNGkind()[1]
-  ...future.rng <- globalenv()$.Random.seed
-  on.exit({
-    ## Undo .Random.seed
-    genv <- globalenv()
-    RNGkind(...future.rngkind)
-    if (is.null(...future.rng)) {
-      if (exists(".Random.seed", envir = genv, inherits = FALSE)) {
-        rm(list = ".Random.seed", envir = genv, inherits = FALSE)
-      }
-    } else {
-      assign(".Random.seed", ...future.rng, envir = genv, inherits = FALSE)
-    }
-  }, add = TRUE)
-
-
-  ## -----------------------------------------------------------------
-  ## Preserve R option 'mc.cores'
-  ## -----------------------------------------------------------------
-  ...future.mc.cores.old <- getOption("mc.cores")
-  on.exit({
-    ## Reset R option 'mc.cores'
-    options(mc.cores = ...future.mc.cores.old)
-  }, add = TRUE)
-
-
-  ## -----------------------------------------------------------------
-  ## Preserve R options
-  ## -----------------------------------------------------------------
-  ## Note, we do this _after_ loading and attaching packages, in
-  ## case they set options/env vars needed for the session, e.g.
+  ## Note, we record R options and environment variables _after_
+  ## loading and attaching packages, in case they set options/env vars
+  ## needed for the session, e.g.
   ## https://github.com/Rdatatable/data.table/issues/5375
+  
+  ## R options
   ...future.oldOptions <- as.list(.Options)
-  on.exit({  
-    ## (a) Reset options
-    ## WORKAROUND: Do not reset 'nwarnings' unless changed, because
-    ## that will, as documented, trigger any warnings collected
-    ## internally to be removed.
-    ## https://github.com/futureverse/future/issues/645
-    if (identical(getOption("nwarnings"), ...future.oldOptions$nwarnings)) {
-      ...future.oldOptions$nwarnings <- NULL
-    }
-    options(...future.oldOptions)
 
-    ## There might be packages that add essential R options when
-    ## loaded or attached, and if their R options are removed, some of
-    ## those packages might break. Because we don't know which these
-    ## packages are, and we cannot detect when a random packages is
-    ## loaded/attached, we cannot reliably workaround R options added
-    ## on package load/attach.  For this reason, I'll relax the
-    ## resetting of R options to only be done to preexisting R options
-    ## for now. These thoughts were triggered by a related data.table
-    ## issue, cf. https://github.com/futureverse/future/issues/609
-    ## /HB 2022-04-29
-    
-    ## (b) Remove any options added
-    ## diff <- setdiff(names(.Options),
-    ##                       names(...future.oldOptions))
-    ## if (length(diff) > 0L) {
-    ##    opts <- vector("list", length = length(diff))
-    ##    names(opts) <- diff
-    ##    options(opts)
-    ## }
-  }, add = TRUE)
-
-
-  ## -----------------------------------------------------------------
-  ## Preserve environment variables
-  ## -----------------------------------------------------------------
-  ## Note, we do this _after_ loading and attaching packages, in
-  ## case they set options/env vars needed for the session, e.g.
-  ## https://github.com/Rdatatable/data.table/issues/5375
+  ## Environment variables
   ...future.oldEnvVars <- Sys.getenv()
-  on.exit({  
+
+
+  ## -----------------------------------------------------------------
+  ## Reset the current state on exit
+  ## -----------------------------------------------------------------
+  on.exit({
     ## (d) Reset environment variables
     if (.Platform$OS.type == "windows") {
       ## On MS Windows, there are two special cases to consider:
@@ -265,32 +235,74 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
     ## (d) Remove any environment variables added
     ## diff <- setdiff(names(Sys.getenv()), names(...future.oldEnvVars))
     ## Sys.unsetenv(diff)
+    
+    ## (a) Reset options
+    ## WORKAROUND: Do not reset 'nwarnings' unless changed, because
+    ## that will, as documented, trigger any warnings collected
+    ## internally to be removed.
+    ## https://github.com/futureverse/future/issues/645
+    if (identical(getOption("nwarnings"), ...future.oldOptions$nwarnings)) {
+      ...future.oldOptions$nwarnings <- NULL
+    }
+    options(...future.oldOptions)
+
+    ## There might be packages that add essential R options when
+    ## loaded or attached, and if their R options are removed, some of
+    ## those packages might break. Because we don't know which these
+    ## packages are, and we cannot detect when a random packages is
+    ## loaded/attached, we cannot reliably workaround R options added
+    ## on package load/attach.  For this reason, I'll relax the
+    ## resetting of R options to only be done to preexisting R options
+    ## for now. These thoughts were triggered by a related data.table
+    ## issue, cf. https://github.com/futureverse/future/issues/609
+    ## /HB 2022-04-29
+    
+    ## (b) Remove any options added
+    ## diff <- setdiff(names(.Options),
+    ##                       names(...future.oldOptions))
+    ## if (length(diff) > 0L) {
+    ##    opts <- vector("list", length = length(diff))
+    ##    names(opts) <- diff
+    ##    options(opts)
+    ## }
+
+    ## Revert to the original future strategy
+    ## Reset option 'future.plan' and env var 'R_FUTURE_PLAN'
+    options(future.plan = ...future.plan.old)
+    plan(...future.strategy.old, .cleanup = FALSE, .init = FALSE)
+    if (is.na(...future.plan.old.envvar)) {
+      Sys.unsetenv("R_FUTURE_PLAN")
+    } else {
+      Sys.setenv(R_FUTURE_PLAN = ...future.plan.old.envvar)
+    }
+
+    ## Undo RNG state
+    genv <- globalenv()
+    RNGkind(...future.rngkind)
+    if (is.null(...future.rng)) {
+      if (exists(".Random.seed", envir = genv, inherits = FALSE)) {
+        rm(list = ".Random.seed", envir = genv, inherits = FALSE)
+      }
+    } else {
+      assign(".Random.seed", ...future.rng, envir = genv, inherits = FALSE)
+    }
+    
+    ## Reset R option 'mc.cores'
+    options(mc.cores = ...future.mc.cores.old)
+
+    ## Reset working directory
+    setwd(...future.workdir)
   }, add = TRUE)
 
 
-  ## covr: skip=7
-  options(
-    ## Prevent .future.R from being source():d when future is attached
-    future.startup.script          = FALSE,
-    
-    ## Assert globals when future is created (or at run time)?
-    future.globals.onMissing       = globals.onMissing,
-    
-    ## Pass down other future.* options
-    future.globals.maxSize         = getOption("future.globals.maxSize"),
-    future.globals.method          = getOption("future.globals.method"),
-    future.globals.onReference     = getOption("future.globals.onReference"),
-    future.globals.resolve         = getOption("future.globals.resolve"),
-    future.resolve.recursive       = getOption("future.resolve.recursive"),
-    future.rng.onMisuse            = getOption("future.rng.onMisuse"),
-    future.rng.onMisuse.keepFuture = getOption("future.rng.onMisuse.keepFuture"),
-    future.stdout.windows.reencode = getOption("future.stdout.windows.reencode"),
+  ## Prevent .future.R from being source():d when future is attached
+  options(future.startup.script = FALSE)
 
-    ## Other options relevant to making futures behave consistently
-    ## across backends
-    width                          = getOption("width")
-  )
-
+  ## Options forwarded from parent process
+  if (length(forwardOptions) > 0) {
+    stopifnot(!is.null(names(forwardOptions)))
+    do.call(options, args = forwardOptions)
+  }
 
   ## -----------------------------------------------------------------
   ## Preserve future options added
@@ -302,35 +314,6 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
       opts <- vector("list", length = length(...future.futureOptionsAdded))
       names(opts) <- ...future.futureOptionsAdded
       options(opts)
-    }
-  }, add = TRUE)
-  
-
-  ## -----------------------------------------------------------------
-  ## Preserve working directory
-  ## -----------------------------------------------------------------
-  ...future.workdir <- getwd()
-  on.exit({
-    setwd(...future.workdir)
-  }, add = TRUE)
-
-
-  ## -----------------------------------------------------------------
-  ## Preserve future strategy
-  ## -----------------------------------------------------------------
-  ## Record the original future strategy set on this worker
-  ...future.plan.old <- getOption("future.plan")
-  ...future.plan.old.envvar <- Sys.getenv("R_FUTURE_PLAN", NA_character_)
-  ...future.strategy.old <- plan("list")
-  on.exit({
-    ## Revert to the original future strategy
-    ## Reset option 'future.plan' and env var 'R_FUTURE_PLAN'
-    options(future.plan = ...future.plan.old)
-    plan(...future.strategy.old, .cleanup = FALSE, .init = FALSE)
-    if (is.na(...future.plan.old.envvar)) {
-      Sys.unsetenv("R_FUTURE_PLAN")
-    } else {
-      Sys.setenv(R_FUTURE_PLAN = ...future.plan.old.envvar)
     }
   }, add = TRUE)
   
@@ -370,7 +353,10 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
   ## Prevent 'future.plan' / R_FUTURE_PLAN settings from being nested
   options(future.plan = NULL)
   Sys.unsetenv("R_FUTURE_PLAN")
-
+  
+  ## Use the next-level-down ("popped") future strategy
+  future::plan(strategiesR, .cleanup = FALSE, .init = FALSE)
+    
   ## Temporarily set R option 'mc.cores'?
   if (!is.null(mc.cores)) {
     options(mc.cores = mc.cores)

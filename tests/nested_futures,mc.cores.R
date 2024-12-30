@@ -41,9 +41,9 @@ for (mc in 1:2) {
     a %<-% {
       b1 %<-% Sys.getpid()
       b2 %<-% Sys.getpid()
-      list(pid = Sys.getpid(), cores = availableCores(), pid1 = b1, pid2 = b2)
+      list(pid = Sys.getpid(), mc.cores = getOption("mc.cores"), cores = availableCores(), plan = plan("list"), pid1 = b1, pid2 = b2)
     }
-    print(a)
+    utils::str(a)
     stopifnot(a$pid == pid)
     stopifnot((mc2 <= 1 && a$pid1 == pid) || (a$pid1 != pid))
     stopifnot((mc2 <= 1 && a$pid2 == pid) || (a$pid2 != pid))
@@ -51,13 +51,13 @@ for (mc in 1:2) {
 
     if (mc == 1L) {
       message(sprintf("plan(list('sequential', '%s':2)):", strategy))
-      plan(list('sequential', tweak(strategy, workers = 2)))
+      plan(list('sequential', tweak(strategy, workers = I(2))))
       a %<-% {
         b1 %<-% Sys.getpid()
         b2 %<-% Sys.getpid()
-        list(pid = Sys.getpid(), cores = availableCores(), pid1 = b1, pid2 = b2)
+        list(pid = Sys.getpid(), mc.cores = getOption("mc.cores"), cores = availableCores(), plan = plan("list"), pid1 = b1, pid2 = b2)
       }
-      print(a)
+      utils::str(a)
       stopifnot(a$pid == pid)
       stopifnot((mc2 <= 1 && a$pid1 == pid) || (a$pid1 != pid))
       stopifnot((mc2 <= 1 && a$pid2 == pid) || (a$pid2 != pid))
@@ -69,9 +69,9 @@ for (mc in 1:2) {
     a %<-% {
       b1 %<-% Sys.getpid()
       b2 %<-% Sys.getpid()
-      list(pid = Sys.getpid(), cores = availableCores(), pid1 = b1, pid2 = b2)
+      list(pid = Sys.getpid(), mc.cores = getOption("mc.cores"), cores = availableCores(), plan = plan("list"), pid1 = b1, pid2 = b2)
     }
-    print(a)
+    utils::str(a)
     stopifnot((mc2 <= 1 && a$pid  == pid) || (a$pid  != pid))
     stopifnot((mc2 <= 1 && a$pid1 == pid) || (a$pid1 != pid))
     stopifnot((mc2 <= 1 && a$pid2 == pid) || (a$pid2 != pid))
@@ -82,9 +82,9 @@ for (mc in 1:2) {
     a %<-% {
       b1 %<-% { Sys.sleep(0.2); Sys.getpid() }
       b2 %<-% Sys.getpid()
-      list(pid = Sys.getpid(), cores = availableCores(), pid1 = b1, pid2 = b2)
+      list(pid = Sys.getpid(), mc.cores = getOption("mc.cores"), cores = availableCores(), plan = plan("list"), pid1 = b1, pid2 = b2)
     }
-    print(a)
+    utils::str(a)
     stopifnot((mc2 <= 1 && a$pid  == pid) || (a$pid  != pid))
     stopifnot((mc2 <= 1 && a$pid1 == pid) || (a$pid1 != pid))
     stopifnot((mc2 <= 1 && a$pid2 == pid) || (a$pid2 != pid))
@@ -92,13 +92,13 @@ for (mc in 1:2) {
 
     if (mc == 1L && !winWorkaround) {
       message(sprintf("plan(list('%s':2, '%s':2)):", strategy, strategy))
-      plan(list(tweak(strategy, workers = 2), tweak(strategy, workers = 2)))
+      plan(list(tweak(strategy, workers = I(2)), tweak(strategy, workers = I(2))))
       a %<-% {
         b1 %<-% Sys.getpid()  ## This stalls
         b2 %<-% Sys.getpid()
-        list(pid = Sys.getpid(), cores = availableCores(), pid1 = b1, pid2 = b2)
+        list(pid = Sys.getpid(), mc.cores = getOption("mc.cores"), cores = availableCores(), plan = plan("list"), pid1 = b1, pid2 = b2)
       }
-      print(a)
+      utils::str(a)
       stopifnot(a$pid  != pid)
       stopifnot(a$pid1 != pid)
       stopifnot(a$pid2 != pid)
