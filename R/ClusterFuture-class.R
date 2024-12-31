@@ -656,37 +656,32 @@ getExpression.ClusterFuture <- local({
   })
 
 
-  function(future, expr = future$expr, immediateConditions = TRUE, conditionClasses = future$conditions, resignalImmediateConditions = getOption("future.psock.relay.immediate", immediateConditions), ...) {
+  function(future, expr = future$expr, immediateConditions = TRUE, ...) {
     ## Assert that no arguments but the first is passed by position
     assert_no_positional_args_but_first()
   
     ## Inject code for resignaling immediateCondition:s?
-    if (resignalImmediateConditions && immediateConditions) {
-      ## Preserve condition classes to be ignored
-      exclude <- attr(conditionClasses, "exclude", exact = TRUE)
-    
-      immediateConditionClasses <- getOption("future.relay.immediate", "immediateCondition")
-      conditionClasses <- unique(c(conditionClasses, immediateConditionClasses))
-  
-      if (length(conditionClasses) > 0L) {
-        ## Does the cluster node communicate with a connection?
-        ## (if not, it's via MPI)
-        workers <- future$workers
-        ## AD HOC/FIXME: Here 'future$node' is yet not assigned, so we look at
-        ## the first worker and assume the others are the same. /HB 2019-10-23
-        cl <- workers[1L]
-        node <- cl[[1L]]
-        con <- node$con
-        if (!is.null(con)) {
-          expr <- bquote_apply(tmpl_expr_conditions)
-        } ## if (!is.null(con))
-      } ## if (length(conditionClasses) > 0)
-      
-      ## Set condition classes to be ignored in case changed
-      attr(conditionClasses, "exclude") <- exclude
+    if (immediateConditions) {
+      resignalImmediateConditions <- getOption("future.psock.relay.immediate", TRUE)
+      if (resignalImmediateConditions) {
+        immediateConditionClasses <- getOption("future.relay.immediate", "immediateCondition")
+        if (length(immediateConditionClasses) > 0L) {
+          ## Does the cluster node communicate with a connection?
+          ## (if not, it's via MPI)
+          workers <- future$workers
+          ## AD HOC/FIXME: Here 'future$node' is yet not assigned, so we look at
+          ## the first worker and assume the others are the same. /HB 2019-10-23
+          cl <- workers[1L]
+          node <- cl[[1L]]
+          con <- node$con
+          if (!is.null(con)) {
+            expr <- bquote_apply(tmpl_expr_conditions)
+          } ## if (!is.null(con))
+        }
+      }
     } ## if (resignalImmediateConditions && immediateConditions)
     
-    NextMethod(expr = expr, immediateConditions = immediateConditions, conditionClasses = conditionClasses)
+    NextMethod(expr = expr, immediateConditions = immediateConditions)
   }
 })
 

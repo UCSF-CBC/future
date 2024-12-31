@@ -299,7 +299,7 @@ result.MulticoreFuture <- function(future, ...) {
 
 #' @export
 getExpression.MulticoreFuture <- local({
-  function(future, expr = future$expr, mc.cores = 1L, immediateConditions = TRUE, conditionClasses = future$conditions, resignalImmediateConditions = getOption("future.multicore.relay.immediate", immediateConditions), ...) {
+  function(future, expr = future$expr, mc.cores = 1L, immediateConditions = TRUE, ...) {
     ## Assert that no arguments but the first is passed by position
     assert_no_positional_args_but_first()
   
@@ -318,22 +318,17 @@ getExpression.MulticoreFuture <- local({
     }
   
     ## Inject code for resignaling immediateCondition:s?
-    if (resignalImmediateConditions && immediateConditions) {
-      ## Preserve condition classes to be ignored
-      exclude <- attr(conditionClasses, "exclude", exact = TRUE)
-    
-      immediateConditionClasses <- getOption("future.relay.immediate", "immediateCondition")
-      conditionClasses <- unique(c(conditionClasses, immediateConditionClasses))
-  
-      if (length(conditionClasses) > 0L) {
-        ## Communicate via the file system
-        expr <- bquote_apply(tmpl_expr_send_immediateConditions_via_file)
-      } ## if (length(conditionClasses) > 0)
-      
-      ## Set condition classes to be ignored in case changed
-      attr(conditionClasses, "exclude") <- exclude
+    if (immediateConditions) {
+      resignalImmediateConditions <- getOption("future.multicore.relay.immediate", TRUE)
+      if (resignalImmediateConditions) {
+        immediateConditionClasses <- getOption("future.relay.immediate", "immediateCondition")
+        if (length(immediateConditionClasses) > 0L) {
+          ## Communicate via the file system
+          expr <- bquote_apply(tmpl_expr_send_immediateConditions_via_file)
+        }
+      }
     } ## if (resignalImmediateConditions && immediateConditions)
   
-    NextMethod(expr = expr, mc.cores = mc.cores, immediateConditions = immediateConditions, conditionClasses = conditionClasses, threads = threads)
+    NextMethod(expr = expr, mc.cores = mc.cores, immediateConditions = immediateConditions, threads = threads)
   }
 })

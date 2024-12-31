@@ -662,9 +662,13 @@ getExpression.Future <- local({
     future:::evalFuture(core = .(core), local = .(local), stdout = .(stdout), conditionClasses = .(conditionClasses), split = .(split), immediateConditions = .(immediateConditions), immediateConditionClasses = .(immediateConditionClasses), strategiesR = .(strategiesR), forwardOptions = .(forwardOptions), threads = .(threads), cleanup = .(cleanup))
   })
 
-  function(future, expr = future$expr, seed = future$seed, local = future$local, stdout = future$stdout, conditionClasses = future$conditions, split = future$split, immediateConditions = FALSE, mc.cores = NULL, threads = NA_integer_, cleanup = TRUE, ...) {
+  function(future, expr = future$expr, conditionClasses = future$conditions, immediateConditions = FALSE, mc.cores = NULL, threads = NA_integer_, cleanup = TRUE, ...) {
     debug <- getOption("future.debug", FALSE)
     ##  mdebug("getExpression() ...")
+
+    local <- future$local
+    stdout <- future$stdout
+    split <- future$split
 
     if (is.null(split)) split <- FALSE
     stop_if_not(is.logical(split), length(split) == 1L, !is.na(split))
@@ -714,15 +718,14 @@ getExpression.Future <- local({
       expr     = expr,
       globals  = globals,
       packages = pkgs,
-      seed     = seed
+      seed     = future$seed
     )
 
-    conditionClassesExclude <- attr(conditionClasses, "exclude", exact = TRUE)
-    muffleInclude <- attr(conditionClasses, "muffleInclude", exact = TRUE)
-    if (is.null(muffleInclude)) muffleInclude <- "^muffle"
-    
     if (immediateConditions && !is.null(conditionClasses)) {
       immediateConditionClasses <- getOption("future.relay.immediate", "immediateCondition")
+      conditionClassesExclude <- attr(conditionClasses, "exclude", exact = TRUE)
+      muffleInclude <- attr(conditionClasses, "muffleInclude", exact = TRUE)
+      if (is.null(muffleInclude)) muffleInclude <- "^muffle"
       conditionClasses <- unique(c(conditionClasses, immediateConditionClasses))
       attr(conditionClasses, "exclude") <- conditionClassesExclude
       attr(conditionClasses, "muffleInclude") <- muffleInclude

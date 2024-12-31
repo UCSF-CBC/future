@@ -22,6 +22,10 @@ evalFuture <- function(core, local = FALSE, stdout = TRUE, conditionClasses = ch
     length(cleanup) == 1L && is.logical(cleanup) && !is.na(cleanup)
   )
 
+  if (!immediateConditions) {
+    immediateConditionClasses <- character(0L)
+  }
+
   ## Is it possible to force single-threaded processing?
   if (!is.na(threads)) {
     ## Setting other than single-threaded processing is currently not
@@ -453,13 +457,13 @@ evalFuture <- function(core, local = FALSE, stdout = TRUE, conditionClasses = ch
           ## Relay 'immediateCondition' conditions immediately?
           ## If so, then do not muffle it and flag it as signalled
           ## already here.
-          signal <- immediateConditions && inherits(cond, immediateConditionClasses)
+          signal <- inherits(cond, immediateConditionClasses)
           ## Record condition
           ...future.conditions[[length(...future.conditions) + 1L]] <<- list(
             condition = cond,
             signaled = as.integer(signal)
           )
-          if (immediateConditions && !split && !signal) {
+          if (length(immediateConditionClasses) > 0 && !split && !signal) {
             muffleCondition(cond, pattern = muffleInclude)
           }
         } else {
