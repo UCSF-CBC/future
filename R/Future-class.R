@@ -662,14 +662,15 @@ getExpression.Future <- local({
     future:::evalFuture(core = .(core), local = .(local), stdout = .(stdout), conditionClasses = .(conditionClasses), split = .(split), immediateConditionClasses = .(immediateConditionClasses), strategiesR = .(strategiesR), forwardOptions = .(forwardOptions), threads = .(threads), cleanup = .(cleanup))
   })
 
-  function(future, expr = future$expr, conditionClasses = future$conditions, immediateConditions = FALSE, mc.cores = NULL, threads = NA_integer_, cleanup = TRUE, ...) {
+  function(future, expr = future$expr, immediateConditions = FALSE, mc.cores = NULL, threads = NA_integer_, cleanup = TRUE, ...) {
     debug <- getOption("future.debug", FALSE)
     ##  mdebug("getExpression() ...")
 
     local <- future$local
     stdout <- future$stdout
     split <- future$split
-
+    conditionClasses <- future$conditions
+    
     if (is.null(split)) split <- FALSE
     stop_if_not(is.logical(split), length(split) == 1L, !is.na(split))
    
