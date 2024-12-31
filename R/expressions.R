@@ -1,15 +1,11 @@
 makeExpression <- local({
-  skip <- skip.local <- NULL
-
-  tmpl_expr_local <- future:::bquote_compile(base::local(.(expr)))
-
   tmpl_expr_evaluate2 <- future:::bquote_compile({
     ## Evaluate future
-    future:::evalFuture(expr = quote(.(expr)), stdout = .(stdout), conditionClasses = .(conditionClasses), split = .(split), immediateConditions = .(immediateConditions), immediateConditionClasses = .(immediateConditionClasses), globals = .(globals), globals.onMissing = .(globals.onMissing), globalenv = .(globalenv), skip = .(skip), packages = .(packages), seed = .(seed), strategiesR = .(strategiesR), forwardOptions = .(forwardOptions), mc.cores = .(mc.cores))
+    future:::evalFuture(expr = quote(.(expr)), local = .(local), stdout = .(stdout), conditionClasses = .(conditionClasses), split = .(split), immediateConditions = .(immediateConditions), immediateConditionClasses = .(immediateConditionClasses), globals = .(globals), packages = .(packages), seed = .(seed), strategiesR = .(strategiesR), forwardOptions = .(forwardOptions), cleanup = .(cleanup))
   })
 
 
-  function(expr, local = TRUE, immediateConditions = FALSE, stdout = TRUE, conditionClasses = NULL, split = FALSE, globals = NULL, globals.onMissing = getOption("future.globals.onMissing", NULL), globalenv = (getOption("future.globalenv.onMisuse", "ignore") != "ignore"), enter = NULL, exit = NULL, version = "1.8", packages = NULL, seed = NULL, mc.cores = NULL) {
+  function(expr, local = TRUE, immediateConditions = FALSE, stdout = TRUE, conditionClasses = NULL, split = FALSE, globals = NULL, version = "1.8", packages = NULL, seed = NULL, mc.cores = NULL, cleanup = TRUE) {
     if (version != "1.8") {    
       stop(FutureError("Internal error: Non-supported future expression version: ", version))
     }
@@ -27,20 +23,6 @@ makeExpression <- local({
       immediateConditionClasses <- character(0L)
     }
     
-    if (is.null(skip)) {
-      ## WORKAROUND: skip = c(7/12, 3) makes assumption about withCallingHandlers()
-      ## and local().  In case this changes, provide internal options to adjust this.
-      ## /HB 2018-12-28
-      skip <<- getOption("future.makeExpression.skip", c(6L, 3L))
-      skip.local <<- getOption("future.makeExpression.skip.local", c(12L, 3L))
-    }
-    
-    ## Evaluate expression in a local() environment?
-    if (local) {
-      expr <- bquote_apply(tmpl_expr_local)
-      skip <- skip.local
-    }
-
     strategies <- plan("list")
     strategiesR <- strategies[-1]
     if (length(strategiesR) == 0L) {
@@ -73,22 +55,30 @@ makeExpression <- local({
 
     forwardOptions <- list(
       ## Assert globals when future is created (or at run time)?
-      future.globals.onMissing       = globals.onMissing,
+      future.globals.onMissing         = getOption("future.globals.onMissing"),
     
       ## Pass down other future.* options
-      future.globals.maxSize         = getOption("future.globals.maxSize"),
-      future.globals.method          = getOption("future.globals.method"),
-      future.globals.onReference     = getOption("future.globals.onReference"),
-      future.globals.resolve         = getOption("future.globals.resolve"),
-      future.resolve.recursive       = getOption("future.resolve.recursive"),
-      future.rng.onMisuse            = getOption("future.rng.onMisuse"),
-      future.rng.onMisuse.keepFuture = getOption("future.rng.onMisuse.keepFuture"),
-      future.stdout.windows.reencode = getOption("future.stdout.windows.reencode"),
+      future.globals.maxSize           = getOption("future.globals.maxSize"),
+      future.globals.method            = getOption("future.globals.method"),
+      future.globals.onReference       = getOption("future.globals.onReference"),
+      future.globals.resolve           = getOption("future.globals.resolve"),
+      future.resolve.recursive         = getOption("future.resolve.recursive"),
+      future.rng.onMisuse              = getOption("future.rng.onMisuse"),
+      future.rng.onMisuse.keepFuture   = getOption("future.rng.onMisuse.keepFuture"),
+      future.stdout.windows.reencode   = getOption("future.stdout.windows.reencode"),
 
+      future.makeExpression.skip       = getOption("future.makeExpression.skip"),
+      future.makeExpression.skip.local = getOption("future.makeExpression.skip.local"),
+      future.globalenv.onMisuse        = getOption("future.globalenv.onMisuse"),
+      
       ## Other options relevant to making futures behave consistently
       ## across backends
-      width                          = getOption("width")
+      width                            = getOption("width")
     )
+
+    if (!is.null(mc.cores)) {
+      forwardOptions$mc.cores <- mc.cores
+    }
 
     expr <- bquote_apply(tmpl_expr_evaluate2)
 
@@ -112,17 +102,16 @@ FutureEvalError <- function(...) {
   ex
 }
 
-evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), split = FALSE, immediateConditions = NULL, immediateConditionClasses = character(0L), globals = NULL, globals.onMissing = getOption("future.globals.onMissing", NULL), globalenv = (getOption("future.globalenv.onMisuse", "ignore") != "ignore"), skip = NULL, packages = NULL, seed = NULL, mc.cores = NULL, forwardOptions = NULL, strategiesR = NULL, envir = parent.frame()) {
+evalFuture <- function(expr, local = FALSE, stdout = TRUE, conditionClasses = character(0L), split = FALSE, immediateConditions = NULL, immediateConditionClasses = character(0L), globals = NULL, packages = NULL, seed = NULL, forwardOptions = NULL, strategiesR = NULL, envir = parent.frame(), cleanup = TRUE) {
   stop_if_not(
+    length(local) == 1L && is.logical(local) && !is.na(local),
     length(stdout) == 1L && is.logical(stdout),
     length(split) == 1L && is.logical(split) && !is.na(split),
     is.null(conditionClasses) || (is.character(conditionClasses) && !anyNA(conditionClasses) && all(nzchar(conditionClasses))),
     length(immediateConditions) == 1L && is.logical(immediateConditions) && !is.na(immediateConditions),
     is.character(immediateConditionClasses) && !anyNA(immediateConditionClasses) && all(nzchar(immediateConditionClasses)),
-    length(globalenv) == 1L && is.logical(globalenv) && !is.na(globalenv),
-    length(skip) == 2L && is.integer(skip) && !anyNA(skip) && all(skip >= 0L),
     is.null(seed) || is_lecyer_cmrg_seed(seed) || (is.logical(seed) && !is.na(seed) || !seed),
-    is.null(mc.cores) || (is.numeric(mc.cores) && length(mc.cores) == 1L && !is.na(mc.cores) && mc.cores >= 1)
+    length(cleanup) == 1L && is.logical(cleanup) && !is.na(cleanup)
   )
 
   if (is.function(strategiesR)) {
@@ -200,143 +189,145 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
   ## -----------------------------------------------------------------
   ## Reset the current state on exit
   ## -----------------------------------------------------------------
-  on.exit({
-    ## (d) Reset environment variables
-    if (.Platform$OS.type == "windows") {
-      ## On MS Windows, there are two special cases to consider:
-      ##
-      ## (1) You cannot have empty environment variables. When one is assigned
-      ## an empty string, MS Windows interprets that as it should be removed.
-      ## That is, if we do Sys.setenv(ABC = ""), it'll have the
-      ## same effect as Sys.unsetenv("ABC").
-      ## However, when running MS Windows on msys2, we might see empty
-      ## environment variables also MS Windows. We can also observe this on
-      ## GitHub Actions and when running R via Wine.
-      ## Because of this, we need to take extra care to preserve empty ("")
-      ## environment variables.
-      ##
-      ## (2) Environment variable names are case insensitive. However, it is
-      ## still possible to have two or more environment variables that have
-      ## the exact same toupper() names, e.g. 'TEMP', 'temp', and 'tEmP'.
-      ## This can happen if 'temp' and 'tEmP' are inherited from the host
-      ## environment (e.g. msys2), and 'TEMP' is set by MS Windows.
-      ## What complicates our undoing here is that Sys.setenv() is non-case
-      ## sensitive.  This means, if we do Sys.setenv(temp = "abc") when
-      ## both 'temp' and 'TEMP' exists, then we'll lose 'TEMP'.  So, we
-      ## should on undo an environment variable if the upper-case version
-      ## does not exist.
-
-      old_names <- names(...future.oldEnvVars)
-      envs <- Sys.getenv()
-      names <- names(envs)
-      common <- intersect(names, old_names)
-      added <- setdiff(names, old_names)
-      removed <- setdiff(old_names, names)
+  if (cleanup) {
+    on.exit({
+      ## (d) Reset environment variables
+      if (.Platform$OS.type == "windows") {
+        ## On MS Windows, there are two special cases to consider:
+        ##
+        ## (1) You cannot have empty environment variables. When one is assigned
+        ## an empty string, MS Windows interprets that as it should be removed.
+        ## That is, if we do Sys.setenv(ABC = ""), it'll have the
+        ## same effect as Sys.unsetenv("ABC").
+        ## However, when running MS Windows on msys2, we might see empty
+        ## environment variables also MS Windows. We can also observe this on
+        ## GitHub Actions and when running R via Wine.
+        ## Because of this, we need to take extra care to preserve empty ("")
+        ## environment variables.
+        ##
+        ## (2) Environment variable names are case insensitive. However, it is
+        ## still possible to have two or more environment variables that have
+        ## the exact same toupper() names, e.g. 'TEMP', 'temp', and 'tEmP'.
+        ## This can happen if 'temp' and 'tEmP' are inherited from the host
+        ## environment (e.g. msys2), and 'TEMP' is set by MS Windows.
+        ## What complicates our undoing here is that Sys.setenv() is non-case
+        ## sensitive.  This means, if we do Sys.setenv(temp = "abc") when
+        ## both 'temp' and 'TEMP' exists, then we'll lose 'TEMP'.  So, we
+        ## should on undo an environment variable if the upper-case version
+        ## does not exist.
+  
+        old_names <- names(...future.oldEnvVars)
+        envs <- Sys.getenv()
+        names <- names(envs)
+        common <- intersect(names, old_names)
+        added <- setdiff(names, old_names)
+        removed <- setdiff(old_names, names)
+        
+        ## (a) Update environment variables that have changed
+        changed <- common[...future.oldEnvVars[common] != envs[common]]
+        NAMES <- toupper(changed)
+        args <- list()
+        for (kk in seq_along(NAMES)) {
+          name <- changed[[kk]]
+          NAME <- NAMES[[kk]]
+          ## Skip if Case (2), e.g. 'temp' when 'TEMP' also exists?
+          if (name != NAME && is.element(NAME, old_names)) next
+          args[[name]] <- ...future.oldEnvVars[[name]]
+        }
+  
+        ## (b) Remove newly added environment variables
+        NAMES <- toupper(added)
+        for (kk in seq_along(NAMES)) {
+          name <- added[[kk]]
+          NAME <- NAMES[[kk]]
+          ## Skip if Case (2), e.g. 'temp' when 'TEMP' also exists?
+          if (name != NAME && is.element(NAME, old_names)) next
+          args[[name]] <- ""
+        }
+  
+        ## (c) Add removed environment variables
+        NAMES <- toupper(removed)
+        for (kk in seq_along(NAMES)) {
+          name <- removed[[kk]]
+          NAME <- NAMES[[kk]]
+          ## Skip if Case (2), e.g. 'temp' when 'TEMP' also exists?
+          if (name != NAME && is.element(NAME, old_names)) next
+          args[[name]] <- ...future.oldEnvVars[[name]]
+        }
+  
+        if (length(args) > 0) do.call(Sys.setenv, args = args)
+  
+        ## Not needed anymore
+        args <- names <- old_names <- NAMES <- envs <- common <- added <- removed <- NULL
+      } else {
+        do.call(Sys.setenv, args = as.list(...future.oldEnvVars))
+      }
       
-      ## (a) Update environment variables that have changed
-      changed <- common[...future.oldEnvVars[common] != envs[common]]
-      NAMES <- toupper(changed)
-      args <- list()
-      for (kk in seq_along(NAMES)) {
-        name <- changed[[kk]]
-        NAME <- NAMES[[kk]]
-        ## Skip if Case (2), e.g. 'temp' when 'TEMP' also exists?
-        if (name != NAME && is.element(NAME, old_names)) next
-        args[[name]] <- ...future.oldEnvVars[[name]]
+      ## For the same reason as we don't remove added R options, we don't
+      ## remove added environment variables until we know it's safe.
+      ## /HB 2022-04-30
+      ## (d) Remove any environment variables added
+      ## diff <- setdiff(names(Sys.getenv()), names(...future.oldEnvVars))
+      ## Sys.unsetenv(diff)
+      
+      ## (a) Reset options
+      ## WORKAROUND: Do not reset 'nwarnings' unless changed, because
+      ## that will, as documented, trigger any warnings collected
+      ## internally to be removed.
+      ## https://github.com/futureverse/future/issues/645
+      if (identical(getOption("nwarnings"), ...future.oldOptions$nwarnings)) {
+        ...future.oldOptions$nwarnings <- NULL
       }
-
-      ## (b) Remove newly added environment variables
-      NAMES <- toupper(added)
-      for (kk in seq_along(NAMES)) {
-        name <- added[[kk]]
-        NAME <- NAMES[[kk]]
-        ## Skip if Case (2), e.g. 'temp' when 'TEMP' also exists?
-        if (name != NAME && is.element(NAME, old_names)) next
-        args[[name]] <- ""
+      options(...future.oldOptions)
+  
+      ## There might be packages that add essential R options when
+      ## loaded or attached, and if their R options are removed, some of
+      ## those packages might break. Because we don't know which these
+      ## packages are, and we cannot detect when a random packages is
+      ## loaded/attached, we cannot reliably workaround R options added
+      ## on package load/attach.  For this reason, I'll relax the
+      ## resetting of R options to only be done to preexisting R options
+      ## for now. These thoughts were triggered by a related data.table
+      ## issue, cf. https://github.com/futureverse/future/issues/609
+      ## /HB 2022-04-29
+      
+      ## (b) Remove any options added
+      ## diff <- setdiff(names(.Options),
+      ##                       names(...future.oldOptions))
+      ## if (length(diff) > 0L) {
+      ##    opts <- vector("list", length = length(diff))
+      ##    names(opts) <- diff
+      ##    options(opts)
+      ## }
+  
+      ## Revert to the original future strategy
+      ## Reset option 'future.plan' and env var 'R_FUTURE_PLAN'
+      options(future.plan = ...future.plan.old)
+      plan(...future.strategy.old, .cleanup = FALSE, .init = FALSE)
+      if (is.na(...future.plan.old.envvar)) {
+        Sys.unsetenv("R_FUTURE_PLAN")
+      } else {
+        Sys.setenv(R_FUTURE_PLAN = ...future.plan.old.envvar)
       }
-
-      ## (c) Add removed environment variables
-      NAMES <- toupper(removed)
-      for (kk in seq_along(NAMES)) {
-        name <- removed[[kk]]
-        NAME <- NAMES[[kk]]
-        ## Skip if Case (2), e.g. 'temp' when 'TEMP' also exists?
-        if (name != NAME && is.element(NAME, old_names)) next
-        args[[name]] <- ...future.oldEnvVars[[name]]
+  
+      ## Undo RNG state
+      genv <- globalenv()
+      RNGkind(...future.rngkind)
+      if (is.null(...future.rng)) {
+        if (exists(".Random.seed", envir = genv, inherits = FALSE)) {
+          rm(list = ".Random.seed", envir = genv, inherits = FALSE)
+        }
+      } else {
+        assign(".Random.seed", ...future.rng, envir = genv, inherits = FALSE)
       }
-
-      if (length(args) > 0) do.call(Sys.setenv, args = args)
-
-      ## Not needed anymore
-      args <- names <- old_names <- NAMES <- envs <- common <- added <- removed <- NULL
-    } else {
-      do.call(Sys.setenv, args = as.list(...future.oldEnvVars))
-    }
-    
-    ## For the same reason as we don't remove added R options, we don't
-    ## remove added environment variables until we know it's safe.
-    ## /HB 2022-04-30
-    ## (d) Remove any environment variables added
-    ## diff <- setdiff(names(Sys.getenv()), names(...future.oldEnvVars))
-    ## Sys.unsetenv(diff)
-    
-    ## (a) Reset options
-    ## WORKAROUND: Do not reset 'nwarnings' unless changed, because
-    ## that will, as documented, trigger any warnings collected
-    ## internally to be removed.
-    ## https://github.com/futureverse/future/issues/645
-    if (identical(getOption("nwarnings"), ...future.oldOptions$nwarnings)) {
-      ...future.oldOptions$nwarnings <- NULL
-    }
-    options(...future.oldOptions)
-
-    ## There might be packages that add essential R options when
-    ## loaded or attached, and if their R options are removed, some of
-    ## those packages might break. Because we don't know which these
-    ## packages are, and we cannot detect when a random packages is
-    ## loaded/attached, we cannot reliably workaround R options added
-    ## on package load/attach.  For this reason, I'll relax the
-    ## resetting of R options to only be done to preexisting R options
-    ## for now. These thoughts were triggered by a related data.table
-    ## issue, cf. https://github.com/futureverse/future/issues/609
-    ## /HB 2022-04-29
-    
-    ## (b) Remove any options added
-    ## diff <- setdiff(names(.Options),
-    ##                       names(...future.oldOptions))
-    ## if (length(diff) > 0L) {
-    ##    opts <- vector("list", length = length(diff))
-    ##    names(opts) <- diff
-    ##    options(opts)
-    ## }
-
-    ## Revert to the original future strategy
-    ## Reset option 'future.plan' and env var 'R_FUTURE_PLAN'
-    options(future.plan = ...future.plan.old)
-    plan(...future.strategy.old, .cleanup = FALSE, .init = FALSE)
-    if (is.na(...future.plan.old.envvar)) {
-      Sys.unsetenv("R_FUTURE_PLAN")
-    } else {
-      Sys.setenv(R_FUTURE_PLAN = ...future.plan.old.envvar)
-    }
-
-    ## Undo RNG state
-    genv <- globalenv()
-    RNGkind(...future.rngkind)
-    if (is.null(...future.rng)) {
-      if (exists(".Random.seed", envir = genv, inherits = FALSE)) {
-        rm(list = ".Random.seed", envir = genv, inherits = FALSE)
-      }
-    } else {
-      assign(".Random.seed", ...future.rng, envir = genv, inherits = FALSE)
-    }
-    
-    ## Reset R option 'mc.cores'
-    options(mc.cores = ...future.mc.cores.old)
-
-    ## Reset working directory
-    setwd(...future.workdir)
-  }, add = TRUE)
+      
+      ## Reset R option 'mc.cores'
+      options(mc.cores = ...future.mc.cores.old)
+  
+      ## Reset working directory
+      setwd(...future.workdir)
+    }, add = TRUE)
+  }
 
 
   ## Prevent .future.R from being source():d when future is attached
@@ -352,19 +343,37 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
   ## Preserve future options added
   ## -----------------------------------------------------------------
   ...future.futureOptionsAdded <- setdiff(names(.Options), names(...future.oldOptions))
-  on.exit({
-    ## Remove any "future" options added
-    if (length(...future.futureOptionsAdded) > 0L) {
-      opts <- vector("list", length = length(...future.futureOptionsAdded))
-      names(opts) <- ...future.futureOptionsAdded
-      options(opts)
-    }
-  }, add = TRUE)
+  if (cleanup) {
+    on.exit({
+      ## Remove any "future" options added
+      if (length(...future.futureOptionsAdded) > 0L) {
+        opts <- vector("list", length = length(...future.futureOptionsAdded))
+        names(opts) <- ...future.futureOptionsAdded
+        options(opts)
+      }
+    }, add = TRUE)
+  }
   
 
   ## -----------------------------------------------------------------
   ## Evaluate future in the correct context
   ## -----------------------------------------------------------------
+  ## Evaluate expression in a local() environment?
+  if (local) {
+    tmpl_expr_local <- bquote_compile(base::local(.(expr)))
+    expr <- bquote_apply(tmpl_expr_local)
+    ## WORKAROUND: This makes assumption about withCallingHandlers()
+    ## and local(). In case this changes, provide internal options to
+    ## adjust this. /HB 2018-12-28
+    skip <- getOption("future.makeExpression.skip.local", c(12L, 3L))
+  } else {
+    ## WORKAROUND: This makes assumption about withCallingHandlers()
+    ## In case this changes, provide internal options to adjust this.
+    ## /HB 2018-12-28
+    skip <- getOption("future.makeExpression.skip", c(6L, 3L))
+  }
+  
+  globalenv <- (getOption("future.globalenv.onMisuse", "ignore") != "ignore")
   if (globalenv) {
     ## Record names of variables in the global environment
     ...future.globalenv.names <- c(names(.GlobalEnv), "...future.value", "...future.globalenv.names", ".Random.seed")
@@ -373,9 +382,11 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
   if (length(globals) > 0) {
     base_attach <- base::attach ## To please R CMD check
     base_attach(globals, pos = 2L, name = "future:globals", warn.conflicts = FALSE)
-    on.exit({
-      detach(name = "future:globals")
-    }, add = TRUE)
+    if (cleanup) {
+      on.exit({
+        detach(name = "future:globals")
+      }, add = TRUE)
+    }
   }
 
   ## Ignore, capture or discard standard output?
@@ -415,11 +426,6 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
 
 #  logme("future:plan() ... done")
 
-  ## Temporarily set R option 'mc.cores'?
-  if (!is.null(mc.cores)) {
-    options(mc.cores = mc.cores)
-  }
-
   ## Set RNG seed?
   if (is.numeric(seed)) {
     genv <- globalenv()
@@ -447,7 +453,7 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
         globalenv = if (globalenv) list(added = setdiff(names(.GlobalEnv), ...future.globalenv.names)) else NULL,
         started = ...future.startTime
       )
-    }, condition = local({
+    }, condition = base::local({
       sysCalls <- function(calls = sys.calls(), from = 1L) {
         calls[seq.int(from = from + skip[1L], to = length(calls) - skip[2L])]
       }

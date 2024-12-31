@@ -656,7 +656,7 @@ resolved.Future <- function(x, run = TRUE, ...) {
 getExpression <- function(future, ...) UseMethod("getExpression")
 
 #' @export
-getExpression.Future <- function(future, expr = future$expr, local = future$local, stdout = future$stdout, conditionClasses = future$conditions, seed = future$seed, split = future$split, mc.cores = NULL, exit = NULL, ...) {
+getExpression.Future <- function(future, expr = future$expr, local = future$local, stdout = future$stdout, conditionClasses = future$conditions, seed = future$seed, split = future$split, mc.cores = NULL, ...) {
   debug <- getOption("future.debug", FALSE)
   ##  mdebug("getExpression() ...")
 
@@ -703,7 +703,7 @@ getExpression.Future <- function(future, expr = future$expr, local = future$loca
     pkgs <- unique(c(pkgs, pkgsS))
   }
 
-  expr <- makeExpression(expr = expr, local = local, stdout = stdout, conditionClasses = conditionClasses, split = split, globals = globals, enter = NULL, exit = exit, ..., seed = seed, packages = pkgs, mc.cores = mc.cores, version = version)
+  expr <- makeExpression(expr = expr, local = local, stdout = stdout, conditionClasses = conditionClasses, split = split, globals = globals, ..., seed = seed, packages = pkgs, mc.cores = mc.cores, version = version)
   if (getOption("future.debug", FALSE)) mprint(expr)
 
   ##  mdebug("getExpression() ... DONE")
