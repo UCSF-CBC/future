@@ -659,7 +659,7 @@ getExpression <- function(future, ...) UseMethod("getExpression")
 getExpression.Future <- local({
   tmpl_expr_evaluate2 <- bquote_compile({
     ## Evaluate future
-    future:::evalFuture(core = .(core), local = .(local), stdout = .(stdout), conditionClasses = .(conditionClasses), split = .(split), immediateConditions = .(immediateConditions), immediateConditionClasses = .(immediateConditionClasses), strategiesR = .(strategiesR), forwardOptions = .(forwardOptions), threads = .(threads), cleanup = .(cleanup))
+    future:::evalFuture(core = .(core), local = .(local), stdout = .(stdout), conditionClasses = .(conditionClasses), split = .(split), immediateConditionClasses = .(immediateConditionClasses), strategiesR = .(strategiesR), forwardOptions = .(forwardOptions), threads = .(threads), cleanup = .(cleanup))
   })
 
   function(future, expr = future$expr, conditionClasses = future$conditions, immediateConditions = FALSE, mc.cores = NULL, threads = NA_integer_, cleanup = TRUE, ...) {
@@ -678,9 +678,6 @@ getExpression.Future <- local({
       warning(FutureWarning("Future version was not set. Using default %s",
                             sQuote(version)))
     }
-  
-    ## Globals needed by the future
-    globals <- globals(future)
   
     ## Packages needed by the future
     pkgs <- packages(future)
@@ -716,21 +713,25 @@ getExpression.Future <- local({
     ## Create a future core
     core <- list(
       expr     = expr,
-      globals  = globals,
+      globals  = globals(future),
       packages = pkgs,
       seed     = future$seed
     )
 
-    if (immediateConditions && !is.null(conditionClasses)) {
+    ## Does the backend support immediate relaying of conditions?
+    if (immediateConditions) {
       immediateConditionClasses <- getOption("future.relay.immediate", "immediateCondition")
-      conditionClassesExclude <- attr(conditionClasses, "exclude", exact = TRUE)
+    } else {
+      immediateConditionClasses <- character(0L)
+    }
+    
+    if (length(immediateConditionClasses) > 0 && !is.null(conditionClasses)) {
+      exclude <- attr(conditionClasses, "exclude", exact = TRUE)
       muffleInclude <- attr(conditionClasses, "muffleInclude", exact = TRUE)
       if (is.null(muffleInclude)) muffleInclude <- "^muffle"
       conditionClasses <- unique(c(conditionClasses, immediateConditionClasses))
-      attr(conditionClasses, "exclude") <- conditionClassesExclude
+      attr(conditionClasses, "exclude") <- exclude
       attr(conditionClasses, "muffleInclude") <- muffleInclude
-    } else {
-      immediateConditionClasses <- character(0L)
     }
   
     forwardOptions <- list(

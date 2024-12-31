@@ -4,7 +4,7 @@ FutureEvalError <- function(...) {
   ex
 }
 
-evalFuture <- function(core, local = FALSE, stdout = TRUE, conditionClasses = character(0L), split = FALSE, immediateConditions = NULL, immediateConditionClasses = character(0L), forwardOptions = NULL, strategiesR = NULL, threads = NA_integer_, envir = parent.frame(), cleanup = TRUE) {
+evalFuture <- function(core, local = FALSE, stdout = TRUE, conditionClasses = character(0L), split = FALSE, immediateConditionClasses = character(0L), forwardOptions = NULL, strategiesR = NULL, threads = NA_integer_, envir = parent.frame(), cleanup = TRUE) {
   expr <- core$expr
   globals <- core$globals
   packages <- core$packages
@@ -15,16 +15,11 @@ evalFuture <- function(core, local = FALSE, stdout = TRUE, conditionClasses = ch
     length(stdout) == 1L && is.logical(stdout),
     length(split) == 1L && is.logical(split) && !is.na(split),
     is.null(conditionClasses) || (is.character(conditionClasses) && !anyNA(conditionClasses) && all(nzchar(conditionClasses))),
-    length(immediateConditions) == 1L && is.logical(immediateConditions) && !is.na(immediateConditions),
     is.character(immediateConditionClasses) && !anyNA(immediateConditionClasses) && all(nzchar(immediateConditionClasses)),
     is.null(seed) || is_lecyer_cmrg_seed(seed) || (is.logical(seed) && !is.na(seed) || !seed),
     length(threads) == 1L && is.integer(threads) && (is.na(threads) || threads >= 1L),
     length(cleanup) == 1L && is.logical(cleanup) && !is.na(cleanup)
   )
-
-  if (!immediateConditions) {
-    immediateConditionClasses <- character(0L)
-  }
 
   ## Is it possible to force single-threaded processing?
   if (!is.na(threads)) {
