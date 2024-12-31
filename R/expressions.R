@@ -1,11 +1,11 @@
 makeExpression <- local({
   tmpl_expr_evaluate2 <- future:::bquote_compile({
     ## Evaluate future
-    future:::evalFuture(expr = quote(.(expr)), local = .(local), stdout = .(stdout), conditionClasses = .(conditionClasses), split = .(split), immediateConditions = .(immediateConditions), immediateConditionClasses = .(immediateConditionClasses), globals = .(globals), packages = .(packages), seed = .(seed), strategiesR = .(strategiesR), forwardOptions = .(forwardOptions), cleanup = .(cleanup))
+    future:::evalFuture(expr = quote(.(expr)), local = .(local), stdout = .(stdout), conditionClasses = .(conditionClasses), split = .(split), immediateConditions = .(immediateConditions), immediateConditionClasses = .(immediateConditionClasses), globals = .(globals), packages = .(packages), seed = .(seed), strategiesR = .(strategiesR), forwardOptions = .(forwardOptions), threads = .(threads), cleanup = .(cleanup))
   })
 
 
-  function(expr, local = TRUE, immediateConditions = FALSE, stdout = TRUE, conditionClasses = NULL, split = FALSE, globals = NULL, version = "1.8", packages = NULL, seed = NULL, mc.cores = NULL, cleanup = TRUE) {
+  function(expr, local = TRUE, immediateConditions = FALSE, stdout = TRUE, conditionClasses = NULL, split = FALSE, globals = NULL, version = "1.8", packages = NULL, seed = NULL, mc.cores = NULL, threads = NA_integer_, cleanup = TRUE) {
     if (version != "1.8") {    
       stop(FutureError("Internal error: Non-supported future expression version: ", version))
     }
@@ -55,25 +55,28 @@ makeExpression <- local({
 
     forwardOptions <- list(
       ## Assert globals when future is created (or at run time)?
-      future.globals.onMissing         = getOption("future.globals.onMissing"),
+      future.globals.onMissing          = getOption("future.globals.onMissing"),
     
       ## Pass down other future.* options
-      future.globals.maxSize           = getOption("future.globals.maxSize"),
-      future.globals.method            = getOption("future.globals.method"),
-      future.globals.onReference       = getOption("future.globals.onReference"),
-      future.globals.resolve           = getOption("future.globals.resolve"),
-      future.resolve.recursive         = getOption("future.resolve.recursive"),
-      future.rng.onMisuse              = getOption("future.rng.onMisuse"),
-      future.rng.onMisuse.keepFuture   = getOption("future.rng.onMisuse.keepFuture"),
-      future.stdout.windows.reencode   = getOption("future.stdout.windows.reencode"),
+      future.globals.maxSize            = getOption("future.globals.maxSize"),
+      future.globals.method             = getOption("future.globals.method"),
+      future.globals.onReference        = getOption("future.globals.onReference"),
+      future.globals.resolve            = getOption("future.globals.resolve"),
+      future.resolve.recursive          = getOption("future.resolve.recursive"),
+      future.rng.onMisuse               = getOption("future.rng.onMisuse"),
+      future.rng.onMisuse.keepFuture    = getOption("future.rng.onMisuse.keepFuture"),
+      future.stdout.windows.reencode    = getOption("future.stdout.windows.reencode"),
 
-      future.makeExpression.skip       = getOption("future.makeExpression.skip"),
-      future.makeExpression.skip.local = getOption("future.makeExpression.skip.local"),
-      future.globalenv.onMisuse        = getOption("future.globalenv.onMisuse"),
+      future.fork.multithreading.enable = getOption("future.fork.multithreading.enable"),
+
+      future.globalenv.onMisuse         = getOption("future.globalenv.onMisuse"),
+
+      future.makeExpression.skip        = getOption("future.makeExpression.skip"),
+      future.makeExpression.skip.local  = getOption("future.makeExpression.skip.local"),
       
       ## Other options relevant to making futures behave consistently
       ## across backends
-      width                            = getOption("width")
+      width                             = getOption("width")
     )
 
     if (!is.null(mc.cores)) {
@@ -88,21 +91,13 @@ makeExpression <- local({
 
 
 
-logme <- function(expr, envir = parent.frame()) {
-  expr <- substitute(expr)
-  stdout <- utils::capture.output(eval(expr, envir = envir))
-  stdout <- sprintf("[evalFuture()] %s\n", stdout)
-  stdout <- paste(stdout, collapse = "")
-  cat(stdout, file = "callr.log", append = TRUE)
-}
-
 FutureEvalError <- function(...) {
   ex <- FutureError(...)
   class(ex) <- c("FutureEvalError", class(ex))
   ex
 }
 
-evalFuture <- function(expr, local = FALSE, stdout = TRUE, conditionClasses = character(0L), split = FALSE, immediateConditions = NULL, immediateConditionClasses = character(0L), globals = NULL, packages = NULL, seed = NULL, forwardOptions = NULL, strategiesR = NULL, envir = parent.frame(), cleanup = TRUE) {
+evalFuture <- function(expr, local = FALSE, stdout = TRUE, conditionClasses = character(0L), split = FALSE, immediateConditions = NULL, immediateConditionClasses = character(0L), globals = NULL, packages = NULL, seed = NULL, forwardOptions = NULL, strategiesR = NULL, threads = NA_integer_, envir = parent.frame(), cleanup = TRUE) {
   stop_if_not(
     length(local) == 1L && is.logical(local) && !is.na(local),
     length(stdout) == 1L && is.logical(stdout),
@@ -111,9 +106,29 @@ evalFuture <- function(expr, local = FALSE, stdout = TRUE, conditionClasses = ch
     length(immediateConditions) == 1L && is.logical(immediateConditions) && !is.na(immediateConditions),
     is.character(immediateConditionClasses) && !anyNA(immediateConditionClasses) && all(nzchar(immediateConditionClasses)),
     is.null(seed) || is_lecyer_cmrg_seed(seed) || (is.logical(seed) && !is.na(seed) || !seed),
+    length(threads) == 1L && is.integer(threads) && (is.na(threads) || threads >= 1L),
     length(cleanup) == 1L && is.logical(cleanup) && !is.na(cleanup)
   )
 
+  ## Is it possible to force single-threaded processing?
+  if (!is.na(threads)) {
+    ## Setting other than single-threaded processing is currently not
+    ## supported. /HB 2024-12-30
+    if (threads != 1L) {
+      stop(FutureEvalError(sprintf("Non-supported value on argument 'threads': %d", threads)))
+    }
+    if (requireNamespace("RhpcBLASctl", quietly = TRUE)) {
+      ## If RhpcBLASctl is compiled without OpenMP support, then it
+      ## returns NA_integer_, or NULL if RhpcBLASctl (< 0.20-17)
+      old_omp_threads <- RhpcBLASctl::omp_get_max_threads()
+      if (is.null(old_omp_threads) || is.na(old_omp_threads)) {
+        threads <- NA_integer_
+      }
+    } else {  
+      threads <- NA_integer_
+    }
+  }
+ 
   if (is.function(strategiesR)) {
     if (!inherits(strategiesR, "future")) {
       stop(FutureEvalError(sprintf("Argument 'strategiesR' is a function, but does not inherit 'future': %s", paste(sQuote(class(strategiesR)), collapse = ", "))))
@@ -416,15 +431,45 @@ evalFuture <- function(expr, local = FALSE, stdout = TRUE, conditionClasses = ch
   ## Prevent 'future.plan' / R_FUTURE_PLAN settings from being nested
   options(future.plan = NULL)
   Sys.unsetenv("R_FUTURE_PLAN")
-  
-#  logme("future:plan() ...")
-#  logme(utils::str(strategiesR))
-#  logme(print(strategiesR))
+
+  ## Prevent multithreading?
+  if (!is.na(threads) && threads == 1L) {
+    ## Force single-threaded OpenMP, iff needed
+    old_omp_threads <- RhpcBLASctl::omp_get_max_threads()
+    if (old_omp_threads != 1L) {
+      RhpcBLASctl::omp_set_num_threads(1L)
+      if (cleanup) {
+        on.exit(RhpcBLASctl::omp_set_num_threads(old_omp_threads), add = TRUE)
+      }
+      
+      new_omp_threads <- RhpcBLASctl::omp_get_max_threads()
+      if (!is.numeric(new_omp_threads) || is.na(new_omp_threads) || new_omp_threads != 1L) {
+        warning(FutureWarning(sprintf("Failed to force a single OMP thread on this system. Number of threads used: %s", new_omp_threads)))
+      }
+    }
+
+    ## Tell BLAS to use a single thread(?)
+    ## NOTE: Is multi-threaded BLAS an issue? Have we got any reports on this.
+    ## FIXME: How can we get the current BLAS settings?
+    ## /HB 2020-01-09
+    ## RhpcBLASctl::blas_set_num_threads(1L)
+
+    ## Force single-threaded RcppParallel, iff needed
+    old_rcppparallel_threads <- Sys.getenv("RCPP_PARALLEL_NUM_THREADS", "")
+    if (old_rcppparallel_threads != "1") {
+      Sys.setenv(RCPP_PARALLEL_NUM_THREADS = "1")
+      if (cleanup) {
+        if (old_rcppparallel_threads == "") {
+          on.exit(Sys.unsetenv("RCPP_PARALLEL_NUM_THREADS"), add = TRUE)
+        } else {
+          on.exit(Sys.setenv(RCPP_PARALLEL_NUM_THREADS = old_rcppparallel_threads), add = TRUE)
+        }
+      }
+    }
+  }
   
   ## Use the next-level-down ("popped") future strategy
   future::plan(strategiesR, .cleanup = FALSE, .init = FALSE)
-
-#  logme("future:plan() ... done")
 
   ## Set RNG seed?
   if (is.numeric(seed)) {
