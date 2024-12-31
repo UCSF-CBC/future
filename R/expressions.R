@@ -372,7 +372,7 @@ evalFuture <- function(expr, stdout = TRUE, conditionClasses = character(0L), sp
 
   if (length(globals) > 0) {
     base_attach <- base::attach ## To please R CMD check
-    base_attach(globals, pos = 2L, name = "future:globals")
+    base_attach(globals, pos = 2L, name = "future:globals", warn.conflicts = FALSE)
     on.exit({
       detach(name = "future:globals")
     }, add = TRUE)
