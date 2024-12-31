@@ -657,16 +657,15 @@ getExpression <- function(future, ...) UseMethod("getExpression")
 
 #' @export
 getExpression.Future <- local({
-
   tmpl_expr_evaluate2 <- bquote_compile({
     ## Evaluate future
-    future:::evalFuture(expr = quote(.(expr)), local = .(local), stdout = .(stdout), conditionClasses = .(conditionClasses), split = .(split), seed = .(seed), immediateConditions = .(immediateConditions), immediateConditionClasses = .(immediateConditionClasses), globals = .(globals), packages = .(pkgs), strategiesR = .(strategiesR), forwardOptions = .(forwardOptions), threads = .(threads), cleanup = .(cleanup))
+    future:::evalFuture(core = .(core), local = .(local), stdout = .(stdout), conditionClasses = .(conditionClasses), split = .(split), immediateConditions = .(immediateConditions), immediateConditionClasses = .(immediateConditionClasses), strategiesR = .(strategiesR), forwardOptions = .(forwardOptions), threads = .(threads), cleanup = .(cleanup))
   })
 
-  function(future, expr = future$expr, local = future$local, stdout = future$stdout, conditionClasses = future$conditions, split = future$split, seed = future$seed, immediateConditions = FALSE, mc.cores = NULL, threads = NA_integer_, cleanup = TRUE, ...) {
+  function(future, expr = future$expr, seed = future$seed, local = future$local, stdout = future$stdout, conditionClasses = future$conditions, split = future$split, immediateConditions = FALSE, mc.cores = NULL, threads = NA_integer_, cleanup = TRUE, ...) {
     debug <- getOption("future.debug", FALSE)
     ##  mdebug("getExpression() ...")
-  
+
     if (is.null(split)) split <- FALSE
     stop_if_not(is.logical(split), length(split) == 1L, !is.na(split))
    
@@ -709,7 +708,15 @@ getExpression.Future <- local({
       if (debug) mdebugf("Packages needed by future strategies (n = %d): %s", length(pkgsS), paste(sQuote(pkgsS), collapse = ", "))
       pkgs <- unique(c(pkgs, pkgsS))
     }
-  
+
+    ## Create a future core
+    core <- list(
+      expr     = expr,
+      globals  = globals,
+      packages = pkgs,
+      seed     = seed
+    )
+
     conditionClassesExclude <- attr(conditionClasses, "exclude", exact = TRUE)
     muffleInclude <- attr(conditionClasses, "muffleInclude", exact = TRUE)
     if (is.null(muffleInclude)) muffleInclude <- "^muffle"

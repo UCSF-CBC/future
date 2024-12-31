@@ -4,7 +4,12 @@ FutureEvalError <- function(...) {
   ex
 }
 
-evalFuture <- function(expr, local = FALSE, stdout = TRUE, conditionClasses = character(0L), split = FALSE, immediateConditions = NULL, immediateConditionClasses = character(0L), globals = NULL, packages = NULL, seed = NULL, forwardOptions = NULL, strategiesR = NULL, threads = NA_integer_, envir = parent.frame(), cleanup = TRUE) {
+evalFuture <- function(core, local = FALSE, stdout = TRUE, conditionClasses = character(0L), split = FALSE, immediateConditions = NULL, immediateConditionClasses = character(0L), forwardOptions = NULL, strategiesR = NULL, threads = NA_integer_, envir = parent.frame(), cleanup = TRUE) {
+  expr <- core$expr
+  globals <- core$globals
+  packages <- core$packages
+  seed <- core$seed
+
   stop_if_not(
     length(local) == 1L && is.logical(local) && !is.na(local),
     length(stdout) == 1L && is.logical(stdout),

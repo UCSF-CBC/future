@@ -1,5 +1,5 @@
 Package: future
-Version: 1.34.0-9099
+Version: 1.34.0-9100
 Title: Unified Parallel and Distributed Processing in R for Everyone
 Imports:
     digest,
