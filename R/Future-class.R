@@ -659,7 +659,7 @@ getExpression <- function(future, ...) UseMethod("getExpression")
 getExpression.Future <- local({
   tmpl_expr_evaluate2 <- bquote_compile({
     ## Evaluate future
-    future:::evalFuture(core = .(core), local = .(local), stdout = .(stdout), conditionClasses = .(conditionClasses), split = .(split), immediateConditionClasses = .(immediateConditionClasses), strategiesR = .(strategiesR), forwardOptions = .(forwardOptions), threads = .(threads), cleanup = .(cleanup))
+    future:::evalFuture(core = .(core), capture = .(capture), local = .(local), split = .(split), immediateConditionClasses = .(immediateConditionClasses), strategiesR = .(strategiesR), forwardOptions = .(forwardOptions), threads = .(threads), cleanup = .(cleanup))
   })
 
   function(future, expr = future$expr, immediateConditions = FALSE, mc.cores = NULL, threads = NA_integer_, cleanup = TRUE, ...) {
@@ -667,9 +667,7 @@ getExpression.Future <- local({
     ##  mdebug("getExpression() ...")
 
     local <- future$local
-    stdout <- future$stdout
     split <- future$split
-    conditionClasses <- future$conditions
     
     if (is.null(split)) split <- FALSE
     stop_if_not(is.logical(split), length(split) == 1L, !is.na(split))
@@ -725,7 +723,8 @@ getExpression.Future <- local({
     } else {
       immediateConditionClasses <- character(0L)
     }
-    
+
+    conditionClasses <- future$conditions
     if (length(immediateConditionClasses) > 0 && !is.null(conditionClasses)) {
       exclude <- attr(conditionClasses, "exclude", exact = TRUE)
       muffleInclude <- attr(conditionClasses, "muffleInclude", exact = TRUE)
@@ -734,7 +733,12 @@ getExpression.Future <- local({
       attr(conditionClasses, "exclude") <- exclude
       attr(conditionClasses, "muffleInclude") <- muffleInclude
     }
-  
+
+    capture <- list(
+      stdout           = future$stdout,
+      conditionClasses = conditionClasses
+    )
+
     forwardOptions <- list(
       ## Assert globals when future is created (or at run time)?
       future.globals.onMissing          = getOption("future.globals.onMissing"),
