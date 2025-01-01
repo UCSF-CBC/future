@@ -21,7 +21,6 @@ MultisessionFuture(
   expr = NULL,
   substitute = TRUE,
   envir = parent.frame(),
-  persistent = FALSE,
   workers = NULL,
   ...
 )

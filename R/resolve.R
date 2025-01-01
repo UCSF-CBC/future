@@ -52,11 +52,6 @@ resolve.default <- function(x, ...) x
 
 #' @export
 resolve.Future <- function(x, idxs = NULL, recursive = 0, result = FALSE, stdout = FALSE, signal = FALSE, force = FALSE, sleep = getOption("future.wait.interval", 0.01), ...) {
-  ## BACKWARD COMPATIBILITY
-  if (missing(result) && "value" %in% names(list(...))) {
-    .Defunct(msg = "Argument 'value' of resolve() is defunct. It was deprecated in future (>= 1.15.0) [2019-11-07]. Use 'result' instead.", package = .packageName)
-  }
-
   ## Automatically update journal entries for Future object
   if (inherits(future, "Future") &&
       inherits(future$.journal, "FutureJournal")) {
@@ -134,11 +129,6 @@ resolve.Future <- function(x, idxs = NULL, recursive = 0, result = FALSE, stdout
 
 #' @export
 resolve.list <- function(x, idxs = NULL, recursive = 0, result = FALSE, stdout = FALSE, signal = FALSE, force = FALSE, sleep = getOption("future.wait.interval", 0.01), ...) {
-  ## BACKWARD COMPATIBILITY
-  if (missing(result) && "value" %in% names(list(...))) {
-    .Defunct(msg = "Argument 'value' of resolve() is defunct. It was deprecated in future (>= 1.15.0) [2019-11-07]. Use 'result' instead.", package = .packageName)
-  }
-
   if (is.logical(recursive)) {
     if (recursive) recursive <- getOption("future.resolve.recursive", 99)
   }
@@ -262,11 +252,6 @@ resolve.list <- function(x, idxs = NULL, recursive = 0, result = FALSE, stdout =
 
 #' @export
 resolve.environment <- function(x, idxs = NULL, recursive = 0, result = FALSE, stdout = FALSE, signal = FALSE, force = FALSE, sleep = getOption("future.wait.interval", 0.01), ...) {
-  ## BACKWARD COMPATIBILITY
-  if (missing(result) && "value" %in% names(list(...))) {
-    .Defunct(msg = "Argument 'value' of resolve() is defunct. It was deprecated in future (>= 1.15.0) [2019-11-07]. Use 'result' instead.", package = .packageName)
-  }
-
   if (is.logical(recursive)) {
     if (recursive) recursive <- getOption("future.resolve.recursive", 99)
   }
@@ -385,11 +370,6 @@ resolve.environment <- function(x, idxs = NULL, recursive = 0, result = FALSE, s
 
 #' @export
 resolve.listenv <- function(x, idxs = NULL, recursive = 0, result = FALSE, stdout = FALSE, signal = FALSE, force = FALSE, sleep = getOption("future.wait.interval", 0.01), ...) {
-  ## BACKWARD COMPATIBILITY
-  if (missing(result) && "value" %in% names(list(...))) {
-    .Defunct(msg = "Argument 'value' of resolve() is defunct. It was deprecated in future (>= 1.15.0) [2019-11-07]. Use 'result' instead.", package = .packageName)
-  }
-
   if (is.logical(recursive)) {
     if (recursive) recursive <- getOption("future.resolve.recursive", 99)
   }

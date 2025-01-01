@@ -10,14 +10,9 @@
 #'
 #' @export
 #' @rdname ClusterFuture-class
-MultisessionFuture <- function(expr = NULL, substitute = TRUE, envir = parent.frame(), persistent = FALSE, workers = NULL, ...) {
+MultisessionFuture <- function(expr = NULL, substitute = TRUE, envir = parent.frame(), workers = NULL, ...) {
   if (substitute) expr <- substitute(expr)
 
-  ## Defunct argument 'persistent'?
-  if (!is.null(list(...)$persistent)) {
-    .Defunct(msg = "Use of argument 'persistent' with multisession futures is defunct.", package = .packageName)
-  }
-  
   future <- ClusterFuture(expr = expr, substitute = FALSE, envir = envir, workers = workers, ...)
   future <- structure(future, class = c("MultisessionFuture", class(future)))
   future
