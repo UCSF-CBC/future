@@ -175,47 +175,6 @@ run.ClusterFuture <- function(future, ...) {
     )
   }
 
-  ## (iii) Export globals
-  globals <- globals(future)
-  if (length(globals) > 0) {
-    t_start <- Sys.time()
-    if (debug) {
-      total_size <- asIEC(objectSize(globals))
-      mdebugf("Exporting %d global objects (%s) to cluster node #%d ...", length(globals), total_size, node_idx)
-    }
-    for (name in names(globals)) {
-      ## For instance sendData.SOCKnode(...) may generate warnings
-      ## on packages not being available after serialization, e.g.
-      ##  In serialize(data, node$con) :
-      ## package:future' may not be available when loading
-      ## Here we'll suppress any such warnings.
-      value <- globals[[name]]
-      if (debug) {
-        size <- asIEC(objectSize(value))
-        mdebugf("Exporting %s (%s) to cluster node #%d ...", sQuote(name), size, node_idx)
-      }
-      suppressWarnings({
-        cluster_call(cl, fun = gassign, name, value, future = future, when = "call gassign() on")
-      })
-      if (debug) mdebugf("Exporting %s (%s) to cluster node #%d ... DONE", sQuote(name), size, node_idx)
-      value <- NULL
-    }
-    if (debug) mdebugf("Exporting %d global objects (%s) to cluster node #%d ... DONE", length(globals), total_size, node_idx)
-    
-    if (inherits(future$.journal, "FutureJournal")) {
-      appendToFutureJournal(future,
-           event = "exportGlobals",
-        category = "overhead",
-          parent = "launch",
-           start = t_start,
-            stop = Sys.time()
-      )
-    }
-  }
-  ## Not needed anymore
-  globals <- NULL
-
-
   ## Add to registry
   FutureRegistry(reg, action = "add", future = future, earlySignal = FALSE)
 
