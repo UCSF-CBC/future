@@ -15,12 +15,14 @@ evalFuture <- function(
       stdout = TRUE,
       conditionClasses = character(0L)
     ),
-    local = FALSE,
+    context = list(
+      strategiesR = NULL,
+      threads = NA_integer_
+    ),
     split = FALSE,
     immediateConditionClasses = character(0L),
     forwardOptions = NULL,
-    strategiesR = NULL,
-    threads = NA_integer_,
+    local = FALSE,
     envir = parent.frame(),
     cleanup = TRUE) {
   expr <- core$expr
@@ -31,6 +33,10 @@ evalFuture <- function(
   stdout <- capture$stdout
   if (is.null(stdout)) stdout <- TRUE
   conditionClasses <- capture$conditionClasses
+
+  strategiesR <- context$strategiesR
+  threads <- context$threads
+  if (is.null(threads)) threads <- NA_integer_
 
   stop_if_not(
     length(local) == 1L && is.logical(local) && !is.na(local),

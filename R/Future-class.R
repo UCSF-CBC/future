@@ -659,7 +659,7 @@ getExpression <- function(future, ...) UseMethod("getExpression")
 getExpression.Future <- local({
   tmpl_expr_evaluate2 <- bquote_compile({
     ## Evaluate future
-    future:::evalFuture(core = .(core), capture = .(capture), local = .(local), split = .(split), immediateConditionClasses = .(immediateConditionClasses), strategiesR = .(strategiesR), forwardOptions = .(forwardOptions), threads = .(threads), cleanup = .(cleanup))
+    future:::evalFuture(core = .(core), capture = .(capture), context = .(context), split = .(split), immediateConditionClasses = .(immediateConditionClasses), forwardOptions = .(forwardOptions), local = .(local), cleanup = .(cleanup))
   })
 
   function(future, expr = future$expr, immediateConditions = FALSE, mc.cores = NULL, threads = NA_integer_, cleanup = TRUE, ...) {
@@ -737,6 +737,11 @@ getExpression.Future <- local({
     capture <- list(
       stdout           = future$stdout,
       conditionClasses = conditionClasses
+    )
+
+    context <- list(
+      threads     = threads,
+      strategiesR = strategiesR
     )
 
     forwardOptions <- list(
