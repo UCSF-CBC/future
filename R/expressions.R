@@ -321,22 +321,6 @@ evalFuture <- function(
     skip <- getOption("future.makeExpression.skip", c(6L, 3L))
   }
   
-  globalenv <- (getOption("future.globalenv.onMisuse", "ignore") != "ignore")
-  if (globalenv) {
-    ## Record names of variables in the global environment
-    ...future.globalenv.names <- c(names(.GlobalEnv), "...future.value", "...future.globalenv.names", ".Random.seed")
-  }
-
-  if (length(globals) > 0) {
-    base_attach <- base::attach ## To please R CMD check
-    base_attach(globals, pos = 2L, name = "future:globals", warn.conflicts = FALSE)
-    if (cleanup) {
-      on.exit({
-        detach(name = "future:globals")
-      }, add = TRUE)
-    }
-  }
-
   ## Ignore, capture or discard standard output?
   if (is.na(stdout)) {  ## stdout = NA
     ## Don't capture, but also don't block any output
@@ -408,6 +392,23 @@ evalFuture <- function(
   if (is.numeric(seed)) {
     genv <- globalenv()
     genv$.Random.seed <- seed
+  }
+
+  globalenv <- (getOption("future.globalenv.onMisuse", "ignore") != "ignore")
+  if (globalenv) {
+    ## Record names of variables in the global environment
+    ...future.globalenv.names <- c(names(.GlobalEnv), "...future.value", "...future.globalenv.names", ".Random.seed")
+  }
+
+  ## Attach globals
+  if (length(globals) > 0) {
+    base_attach <- base::attach ## To please R CMD check
+    base_attach(globals, pos = 2L, name = "future:globals", warn.conflicts = FALSE)
+    if (cleanup) {
+      on.exit({
+        detach(name = "future:globals")
+      }, add = TRUE)
+    }
   }
 
   conditionClassesExclude <- attr(conditionClasses, "exclude", exact = TRUE)
