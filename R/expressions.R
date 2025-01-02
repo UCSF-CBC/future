@@ -468,6 +468,7 @@ evalFuture <- function(
       FutureResult(
         value = ...future.value$value,
         visible = ...future.value$visible,
+        conditions = ...future.conditions,
         rng = !identical(globalenv()$.Random.seed, ...future.rng),
         globalenv = if (globalenv) list(added = setdiff(names(.GlobalEnv), ...future.globalenv.names)) else NULL,
         started = ...future.startTime
@@ -534,6 +535,7 @@ evalFuture <- function(
     })) ## local() + withCallingHandlers()
   }, error = function(ex) {
     FutureResult(
+      conditions = ...future.conditions,
       rng = !identical(globalenv()$.Random.seed, ...future.rng),
       globalenv = if (globalenv) list(added = setdiff(names(.GlobalEnv), ...future.globalenv.names)) else NULL,
       started = ...future.startTime
@@ -556,9 +558,6 @@ evalFuture <- function(
     close(...future.stdout)
     ...future.stdout <- NULL
   }
-
-  ...future.result$conditions <- ...future.conditions
-  ...future.result$finished <- Sys.time()
 
   ...future.result
 } ## evalFuture()
