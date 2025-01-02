@@ -48,7 +48,7 @@ run.MulticoreFuture <- function(future, ...) {
 
   mcparallel <- importParallel("mcparallel")
 
-  expr <- getExpression(future, globals = list())
+  expr <- getExpression(future, globals = list(), cleanup = FALSE)
   envir <- future$envir
   envir <- new.env(parent = envir)
 
