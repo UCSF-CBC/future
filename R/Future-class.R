@@ -662,9 +662,10 @@ getExpression.Future <- local({
     future:::evalFuture(core = .(core), capture = .(capture), context = .(context), split = .(split), immediateConditionClasses = .(immediateConditionClasses), forwardOptions = .(forwardOptions), local = .(local), cleanup = .(cleanup))
   })
 
-  function(future, expr = future$expr, immediateConditions = FALSE, threads = NA_integer_, cleanup = TRUE, ...) {
+  function(future, expr = future$expr, immediateConditions = FALSE, threads = NA_integer_, ..., cleanup = TRUE) {
     debug <- getOption("future.debug", FALSE)
     ##  mdebug("getExpression() ...")
+    args <- list(...)
 
     local <- future$local
     split <- future$split
@@ -710,9 +711,11 @@ getExpression.Future <- local({
     }
 
     ## Create a future core
+    globals <- args$globals
+    if (is.null(globals)) globals <- globals(future)
     core <- list(
       expr     = expr,
-      globals  = globals(future),
+      globals  = globals,
       packages = pkgs,
       seed     = future$seed
     )
@@ -770,7 +773,7 @@ getExpression.Future <- local({
       width                             = getOption("width")
     )
 
-    mc.cores <- list(...)$mc.cores
+    mc.cores <- args$mc.cores
     if (!is.null(mc.cores)) {
       forwardOptions$mc.cores <- mc.cores
     }

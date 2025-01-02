@@ -33,7 +33,7 @@ run.UniprocessFuture <- function(future, ...) {
   ## also the one that evaluates/resolves/queries it.
   assertOwner(future)
 
-  expr <- getExpression(future)
+  expr <- getExpression(future, globals = list())
   envir <- future$envir
   envir <- new.env(parent = envir)
 

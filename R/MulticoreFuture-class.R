@@ -48,15 +48,16 @@ run.MulticoreFuture <- function(future, ...) {
 
   mcparallel <- importParallel("mcparallel")
 
-  expr <- getExpression(future)
+  expr <- getExpression(future, globals = list())
   envir <- future$envir
+  envir <- new.env(parent = envir)
 
   t_start <- Sys.time()
   
   ## Assign globals
-  envir <- new.env(parent = envir)
-  if (length(future$globals) > 0L) {
-    envir <- assign_globals(envir, globals = future$globals)
+  globals <- future$globals
+  if (length(globals) > 0L) {
+    envir <- assign_globals(envir, globals = globals)
   }
 
   ## Get a free worker
