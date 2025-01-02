@@ -662,7 +662,7 @@ getExpression.Future <- local({
     future:::evalFuture(core = .(core), capture = .(capture), context = .(context), split = .(split), immediateConditionClasses = .(immediateConditionClasses), forwardOptions = .(forwardOptions), local = .(local), cleanup = .(cleanup))
   })
 
-  function(future, expr = future$expr, immediateConditions = FALSE, mc.cores = NULL, threads = NA_integer_, cleanup = TRUE, ...) {
+  function(future, expr = future$expr, immediateConditions = FALSE, threads = NA_integer_, cleanup = TRUE, ...) {
     debug <- getOption("future.debug", FALSE)
     ##  mdebug("getExpression() ...")
 
@@ -769,7 +769,8 @@ getExpression.Future <- local({
       ## across backends
       width                             = getOption("width")
     )
-  
+
+    mc.cores <- list(...)$mc.cores
     if (!is.null(mc.cores)) {
       forwardOptions$mc.cores <- mc.cores
     }
