@@ -1,6 +1,12 @@
 # Version (development version)
 
- * ...
+## New Features
+
+ * All parallel backends now prevent nested parallelization, unless
+   explicitly allowed, e.g. settings recognized by
+   `parallelly::availableCores()` or set by the future
+   `plan()`. Previously, this had to be implemented by each backend,
+   but now it's handled automatically by the future framework.
 
 
 # Version 1.34.0 [2024-07-29]

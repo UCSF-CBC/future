@@ -80,7 +80,11 @@ run.MulticoreFuture <- function(future, ...) {
   FutureRegistry(reg, action = "add", future = future, earlySignal = TRUE)
 
   future.args <- list(expr)
-  job <- do.call(parallel::mcparallel, args = future.args, envir = envir)
+  job <- local({
+    oopts <- options(mc.cores = NULL)
+    on.exit(options(oopts))
+    do.call(parallel::mcparallel, args = future.args, envir = envir)
+  })
 
   future$job <- job
   future$state <- "running"
@@ -299,7 +303,7 @@ result.MulticoreFuture <- function(future, ...) {
 
 #' @export
 getExpression.MulticoreFuture <- local({
-  function(future, expr = future$expr, mc.cores = 1L, immediateConditions = TRUE, ...) {
+  function(future, expr = future$expr, immediateConditions = TRUE, ...) {
     ## Assert that no arguments but the first is passed by position
     assert_no_positional_args_but_first()
   
@@ -329,6 +333,6 @@ getExpression.MulticoreFuture <- local({
       }
     } ## if (resignalImmediateConditions && immediateConditions)
   
-    NextMethod(expr = expr, mc.cores = mc.cores, immediateConditions = immediateConditions, threads = threads)
+    NextMethod(expr = expr, immediateConditions = immediateConditions, threads = threads)
   }
 })

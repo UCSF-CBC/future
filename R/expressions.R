@@ -391,8 +391,42 @@ evalFuture <- function(
     }
   }
   
+  ## Limit nested parallelization
+  ## (a) Identify default number of cores - ignoring plan settings
+  ...future.ncores <- base::local({
+    ans <- NA_integer_
+    
+    base::options(parallelly.availableCores.fallback = 1L)
+    ncores <- parallelly::availableCores(which = "all")
+    ncores <- ncores[ncores != ncores["system"]]
+    ncores <- ncores[base::setdiff(base::names(ncores), base::c("_R_CHECK_LIMIT_CORES_", "Bioconductor"))]
+    if (base::length(ncores) > 0) {
+      if (base::length(ncores) > 1) {
+        ncores <- ncores[base::setdiff(base::names(ncores), "fallback")]
+      }
+      if (base::length(ncores) > 0) {
+        ans <- base::min(ncores, na.rm = TRUE)
+      }
+    }
+    ans
+  })
+
   ## Use the next-level-down ("popped") future strategy
   future::plan(strategiesR, .cleanup = FALSE, .init = FALSE)
+
+  if (!is.na(...future.ncores)) {
+    ## (b) Identify default number of cores - acknowledging plan settings
+    ...future.ncores <- base::local({
+      nworkers <- future::nbrOfWorkers()
+      base::min(base::c(nworkers, ...future.ncores), na.rm = TRUE)
+    })
+  }
+
+  if (!is.na(...future.ncores)) {
+    ...future.options.ncores <- base::options(mc.cores = ...future.ncores)
+    base::on.exit(base::options(...future.options.ncores), add = TRUE)
+  }
+  
 
   ## Set RNG seed?
   if (is.numeric(seed)) {
