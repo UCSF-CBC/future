@@ -314,7 +314,12 @@ evalFuture <- function(
   ## -----------------------------------------------------------------
   ## Evaluate expression in a local() environment?
   if (local) {
-    tmpl_expr_local <- bquote_compile(base::local(.(expr)))
+    tmpl_expr_local <- bquote_compile(base::local({
+      env <- base::environment()
+      base::attr(env, "name") <- "future:evalenv"
+      base::rm(list = "env")
+      .(expr)
+    }))
     expr <- bquote_apply(tmpl_expr_local)
     ## WORKAROUND: This makes assumption about withCallingHandlers()
     ## and local(). In case this changes, provide internal options to
