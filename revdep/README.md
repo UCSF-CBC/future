@@ -10,14 +10,14 @@
 |collate  |en_US.UTF-8                                           |
 |ctype    |en_US.UTF-8                                           |
 |tz       |America/Los_Angeles                                   |
-|date     |2025-01-02                                            |
+|date     |2025-01-03                                            |
 |pandoc   |3.6 @ /software/c4/cbi/software/pandoc-3.6/bin/pandoc |
 
 # Dependencies
 
 |package    |old    |new         |Δ  |
 |:----------|:------|:-----------|:--|
-|future     |1.34.0 |1.34.0-9006 |*  |
+|future     |1.34.0 |1.34.0-9109 |*  |
 |codetools  |0.2-20 |0.2-20      |   |
 |digest     |0.6.37 |0.6.37      |   |
 |globals    |0.16.3 |0.16.3      |   |
@@ -89,7 +89,7 @@
 |[ClustIRR](problems.md#clustirr)|1.4.0     |      |        |2    |
 |[codalm](problems.md#codalm)|0.1.2     |      |        |1    |
 |[codebook](problems.md#codebook)|0.9.5     |      |        |1    |
-|[collinear](problems.md#collinear)|2.0.0     |      |        |1 -1 |
+|[collinear](problems.md#collinear)|2.0.0     |      |        |1    |
 |conformalInference.fd      |1.1.1     |      |        |     |
 |conformalInference.multi   |1.1.1     |      |        |     |
 |[Coxmos](problems.md#coxmos)|1.0.2     |      |        |1    |
@@ -99,7 +99,7 @@
 |[CSGo](problems.md#csgo)   |0.6.7     |      |        |1    |
 |cvasi                      |1.3.1     |      |        |     |
 |cvCovEst                   |1.2.2     |      |        |     |
-|[dar](problems.md#dar)     |1.2.0     |-1    |        |1    |
+|[dar](problems.md#dar)     |1.2.0     |      |        |1    |
 |dartR.popgen               |1.0.0     |      |        |     |
 |dataquieR                  |2.1.0     |      |        |     |
 |DeclareDesign              |1.0.10    |      |        |     |
@@ -158,7 +158,7 @@
 |futureverse                |0.1.0     |      |        |     |
 |fxTWAPLS                   |0.1.3     |      |        |     |
 |[GeDS](problems.md#geds)   |0.2.4     |      |1       |     |
-|genBaRcode                 |1.2.7     |      |        |-1   |
+|genBaRcode                 |1.2.7     |      |        |     |
 |[geocmeans](problems.md#geocmeans)|0.3.4     |      |        |1    |
 |[geohabnet](problems.md#geohabnet)|2.1.3     |2     |        |     |
 |[GeoModels](problems.md#geomodels)|2.0.8     |      |        |1    |
@@ -184,7 +184,7 @@
 |[hero](problems.md#hero)   |0.6       |      |        |3    |
 |[heterogen](problems.md#heterogen)|1.2.33    |      |        |1    |
 |hoopR                      |2.1.0     |      |        |     |
-|[httpgd](problems.md#httpgd)|2.0.2     |1     |        |2    |
+|[httpgd](problems.md#httpgd)|2.0.2     |      |        |2    |
 |[hwep](problems.md#hwep)   |2.0.2     |      |        |3    |
 |hydroloom                  |1.1.0     |      |        |     |
 |idmodelr                   |0.4.0     |      |        |     |
@@ -211,7 +211,7 @@
 |[keyATM](problems.md#keyatm)|0.5.2     |      |        |1    |
 |[kmeRtone](problems.md#kmertone)|1.0       |      |        |2    |
 |LandComp                   |0.0.5     |      |        |     |
-|[latentcor](problems.md#latentcor)|2.0.1     |      |        |1    |
+|[latentcor](problems.md#latentcor)|2.0.1     |      |        |1 -1 |
 |[lava](problems.md#lava)   |1.8.0     |      |        |1    |
 |lavaangui                  |0.2.1     |      |        |     |
 |ldaPrototype               |0.3.1     |      |        |     |
@@ -220,7 +220,7 @@
 |lemna                      |1.0.1     |      |        |     |
 |LexFindR                   |1.1.0     |      |        |     |
 |lgr                        |0.4.4     |      |        |     |
-|[lidR](problems.md#lidr)   |4.1.2     |1     |        |1    |
+|[lidR](problems.md#lidr)   |4.1.2     |      |        |1    |
 |lightr                     |1.8.0     |      |        |     |
 |lmtp                       |1.4.0     |      |        |     |
 |LTFHPlus                   |2.1.2     |      |        |     |
@@ -243,7 +243,7 @@
 |[mikropml](problems.md#mikropml)|1.6.1     |      |        |1    |
 |[MineICA](problems.md#mineica)|1.46.0    |      |4       |4    |
 |[missSBM](problems.md#misssbm)|1.0.4     |      |        |1    |
-|[mistyR](problems.md#mistyr)|1.14.0    |      |        |3    |
+|[mistyR](problems.md#mistyr)|1.14.0    |      |        |2    |
 |mlr3                       |0.22.1    |      |        |     |
 |mlr3db                     |0.5.2     |      |        |     |
 |mlr3pipelines              |0.7.1     |      |        |     |
@@ -291,7 +291,7 @@
 |[pgxRpi](problems.md#pgxrpi)|1.2.0     |      |        |2    |
 |[photosynthesis](problems.md#photosynthesis)|2.1.5     |      |        |2    |
 |[phylolm](problems.md#phylolm)|2.6.5     |      |        |1    |
-|phylopath                  |1.3.0     |      |        |-1   |
+|phylopath                  |1.3.0     |      |        |     |
 |PINstimation               |0.1.2     |      |        |     |
 |[pliman](problems.md#pliman)|3.0.0     |      |        |1    |
 |[PLNmodels](problems.md#plnmodels)|1.2.0     |      |        |1    |
@@ -303,13 +303,13 @@
 |[ProFAST](problems.md#profast)|1.4       |      |        |2    |
 |progressr                  |0.15.1    |      |        |     |
 |[projpred](problems.md#projpred)|2.8.0     |      |        |2    |
-|[promises](problems.md#promises)|1.3.2     |      |        |1    |
+|promises                   |1.3.2     |      |        |-1   |
 |[Prostar](problems.md#prostar)|1.38.1    |      |        |3    |
 |proteus                    |1.1.4     |      |        |     |
 |protti                     |0.9.1     |      |        |     |
 |[psborrow2](problems.md#psborrow2)|0.0.3.4   |      |        |1    |
 |PSCBS                      |0.67.0    |      |        |     |
-|[pseudohouseholds](problems.md#pseudohouseholds)|0.1.1     |      |        |1    |
+|[pseudohouseholds](problems.md#pseudohouseholds)|0.1.1     |      |        |2    |
 |PUMP                       |1.0.3     |      |        |     |
 |[qape](problems.md#qape)   |2.1       |      |        |1    |
 |QBMS                       |1.5.0     |      |        |     |
@@ -321,7 +321,7 @@
 |rBiasCorrection            |0.3.4     |      |        |     |
 |Rcurvep                    |1.3.1     |      |        |     |
 |readsdr                    |0.3.0     |      |        |     |
-|[receptiviti](problems.md#receptiviti)|0.1.8     |1     |        |     |
+|receptiviti                |0.1.8     |      |        |     |
 |recforest                  |1.0.0     |      |        |     |
 |rechaRge                   |1.0.0     |      |        |     |
 |refineR                    |1.6.2     |      |        |     |
@@ -332,7 +332,7 @@
 |reval                      |3.1-0     |      |        |     |
 |[rgee](problems.md#rgee)   |1.1.7     |      |        |2    |
 |robotstxt                  |0.7.15    |      |        |     |
-|robust2sls                 |0.2.2     |-1    |        |     |
+|robust2sls                 |0.2.2     |      |        |     |
 |[rpm](problems.md#rpm)     |0.7-3     |      |        |1    |
 |rsi                        |0.3.1     |      |        |     |
 |RTransferEntropy           |0.2.21    |      |        |     |
@@ -347,7 +347,7 @@
 |[sctransform](problems.md#sctransform)|0.4.1     |      |        |1    |
 |[sdmTMB](problems.md#sdmtmb)|0.6.0     |      |        |1    |
 |seer                       |1.1.8     |      |        |     |
-|segtest                    |1.0.1     |      |        |     |
+|segtest                    |1.0.1     |      |        |-1   |
 |semPower                   |2.1.1     |      |        |     |
 |semTests                   |0.5.0     |      |        |     |
 |semtree                    |0.9.20    |      |        |     |
@@ -378,7 +378,7 @@
 |[spaMM](problems.md#spamm) |4.5.0     |      |        |2    |
 |spanishoddata              |0.1.0     |      |        |     |
 |[sparrpowR](problems.md#sparrpowr)|0.2.8     |      |1       |     |
-|[SPARSEMODr](problems.md#sparsemodr)|1.2.0     |      |        |2    |
+|[SPARSEMODr](problems.md#sparsemodr)|1.2.0     |      |        |1    |
 |spatialTIME                |1.3.4-5   |      |        |     |
 |[spatialwarnings](problems.md#spatialwarnings)|3.1.0     |      |        |1    |
 |spdesign                   |0.0.5     |      |        |     |

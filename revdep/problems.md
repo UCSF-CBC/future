@@ -16,9 +16,9 @@ Run `revdepcheck::revdep_details(, "aifeducation")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  6.5Mb
+      installed size is  5.6Mb
       sub-directories of 1Mb or more:
-        R      2.0Mb
+        R      1.1Mb
         data   1.6Mb
         libs   1.5Mb
     ```
@@ -157,9 +157,9 @@ Run `revdepcheck::revdep_details(, "aroma.affymetrix")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  5.4Mb
+      installed size is  7.2Mb
       sub-directories of 1Mb or more:
-        R             2.3Mb
+        R             4.0Mb
         help          1.1Mb
         testScripts   1.1Mb
     ```
@@ -335,7 +335,7 @@ Run `revdepcheck::revdep_details(, "bcmaps")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  6.2Mb
+      installed size is  6.3Mb
       sub-directories of 1Mb or more:
         R     1.4Mb
         doc   4.5Mb
@@ -441,10 +441,10 @@ Run `revdepcheck::revdep_details(, "blavaan")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 222.0Mb
+      installed size is 187.5Mb
       sub-directories of 1Mb or more:
         R           1.2Mb
-        libs      219.0Mb
+        libs      184.6Mb
         testdata    1.4Mb
     ```
 
@@ -476,9 +476,9 @@ Run `revdepcheck::revdep_details(, "brms")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  8.8Mb
+      installed size is  9.0Mb
       sub-directories of 1Mb or more:
-        R     3.8Mb
+        R     4.0Mb
         doc   3.6Mb
     ```
 
@@ -500,7 +500,7 @@ Run `revdepcheck::revdep_details(, "bslib")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 11.9Mb
+      installed size is 11.8Mb
       sub-directories of 1Mb or more:
         components   1.0Mb
         fonts        2.8Mb
@@ -803,15 +803,6 @@ Run `revdepcheck::revdep_details(, "collinear")` for more info
 
 </details>
 
-## Newly fixed
-
-*   checking installed package size ... NOTE
-    ```
-      installed size is  7.4Mb
-      sub-directories of 1Mb or more:
-        data   7.0Mb
-    ```
-
 ## In both
 
 *   checking data for non-ASCII characters ... NOTE
@@ -909,33 +900,6 @@ Run `revdepcheck::revdep_details(, "CSGo")` for more info
 Run `revdepcheck::revdep_details(, "dar")` for more info
 
 </details>
-
-## Newly fixed
-
-*   checking tests ...
-    ```
-      Running ‘testthat.R’
-     ERROR
-    Running the tests in ‘tests/testthat.R’ failed.
-    Last 50 lines of output:
-       40. ├─dar:::run_metagenomeseq(...)
-       41. │ └─vars %>% purrr::set_names() %>% ...
-       42. ├─purrr::map(...)
-       43. │ └─purrr:::map_("list", .x, .f, ..., .progress = .progress)
-       44. │   ├─purrr:::with_indexed_errors(...)
-       45. │   │ └─base::withCallingHandlers(...)
-    ...
-       82. │   └─rlang::abort(...)
-       83. │     └─rlang:::signal_abort(cnd, .file)
-       84. │       └─base::signalCondition(cnd)
-       85. └─purrr (local) `<fn>`(`<prrr_rr_>`)
-       86.   └─cli::cli_abort(...)
-       87.     └─rlang::abort(...)
-      
-      [ FAIL 1 | WARN 0 | SKIP 10 | PASS 80 ]
-      Error: Test failures
-      Execution halted
-    ```
 
 ## In both
 
@@ -1077,9 +1041,9 @@ Run `revdepcheck::revdep_details(, "DT")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  7.8Mb
+      installed size is  6.5Mb
       sub-directories of 1Mb or more:
-        htmlwidgets   7.0Mb
+        htmlwidgets   5.6Mb
     ```
 
 # EFAtools
@@ -1244,10 +1208,10 @@ Run `revdepcheck::revdep_details(, "fdacluster")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 22.7Mb
+      installed size is 24.8Mb
       sub-directories of 1Mb or more:
         R      1.8Mb
-        doc    1.5Mb
+        doc    3.6Mb
         help   2.1Mb
         libs  16.8Mb
     ```
@@ -1277,7 +1241,7 @@ Run `revdepcheck::revdep_details(, "fect")` for more info
     ```
       installed size is 14.7Mb
       sub-directories of 1Mb or more:
-        libs  13.4Mb
+        libs  13.3Mb
     ```
 
 *   checking dependencies in R code ... NOTE
@@ -1664,7 +1628,7 @@ Run `revdepcheck::revdep_details(, "greed")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 38.3Mb
+      installed size is 38.4Mb
       sub-directories of 1Mb or more:
         libs  36.0Mb
     ```
@@ -1782,7 +1746,7 @@ Run `revdepcheck::revdep_details(, "hal9001")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  5.3Mb
+      installed size is  5.4Mb
       sub-directories of 1Mb or more:
         libs   4.9Mb
     ```
@@ -1891,31 +1855,6 @@ Run `revdepcheck::revdep_details(, "httpgd")` for more info
 
 ## In both
 
-*   checking tests ...
-    ```
-      Running ‘testthat.R’/software/c4/cbi/software/_rocky8/R-4.4.2-gcc13/lib64/R/bin/BATCH: line 60: 2515895 Segmentation fault      (core dumped) ${R_HOME}/bin/R -f ${in} ${opts} ${R_BATCH_OPTIONS} > ${out} 2>&1
-    
-     ERROR
-    Running the tests in ‘tests/testthat.R’ failed.
-    Last 50 lines of output:
-       1. └─jsonlite::fromJSON(httr::content(res, as = "text")) at test-server.R:62:3
-       2.   └─jsonlite:::parse_and_simplify(...)
-       3.     └─jsonlite:::parseJSON(txt, bigint_as_char)
-       4.       └─jsonlite:::parse_string(txt, bigint_as_char)
-      ── Error ('test-server.R:83:5'): Clear plots ───────────────────────────────────
-    ...
-      1/1 mismatches
-      [1] 503 - 404 == 99
-      
-      [ FAIL 16 | WARN 0 | SKIP 0 | PASS 2 ]
-      Error: Test failures
-      Execution halted
-      
-       *** caught segfault ***
-      address 0x2000000010010, cause 'memory not mapped'
-      An irrecoverable exception occurred. R is aborting now ...
-    ```
-
 *   checking C++ specification ... NOTE
     ```
       Specified C++14: please drop specification unless essential
@@ -1923,9 +1862,9 @@ Run `revdepcheck::revdep_details(, "httpgd")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 12.5Mb
+      installed size is 13.6Mb
       sub-directories of 1Mb or more:
-        libs  11.9Mb
+        libs  13.0Mb
     ```
 
 # hwep
@@ -2156,7 +2095,7 @@ Run `revdepcheck::revdep_details(, "JANE")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 12.9Mb
+      installed size is 13.0Mb
       sub-directories of 1Mb or more:
         libs  12.7Mb
     ```
@@ -2225,6 +2164,15 @@ Run `revdepcheck::revdep_details(, "kmeRtone")` for more info
 Run `revdepcheck::revdep_details(, "latentcor")` for more info
 
 </details>
+
+## Newly fixed
+
+*   checking installed package size ... NOTE
+    ```
+      installed size is  5.4Mb
+      sub-directories of 1Mb or more:
+        R   5.1Mb
+    ```
 
 ## In both
 
@@ -2318,34 +2266,11 @@ Run `revdepcheck::revdep_details(, "lidR")` for more info
 
 ## In both
 
-*   checking tests ...
-    ```
-      Running ‘testthat.R’/software/c4/cbi/software/_rocky8/R-4.4.2-gcc13/lib64/R/bin/BATCH: line 60: 2657431 Aborted                 (core dumped) ${R_HOME}/bin/R -f ${in} ${opts} ${R_BATCH_OPTIONS} > ${out} 2>&1
-    
-     ERROR
-    Running the tests in ‘tests/testthat.R’ failed.
-    Complete output:
-      > Sys.setenv("R_TESTS" = "")
-      > 
-      > library(testthat)
-      > library(lidR)
-      > test_check("lidR")
-      Tests using raster: terra 
-      Tests using future: TRUE 
-      Tests using OpenMP thread: 16 
-      Tests using rlas: 1.8.0 
-      OGR: Unsupported geometry type
-      OGR: Unsupported geometry type
-      Chunk 1 of 1 (100%): state ✓
-      terminate called after throwing an instance of 'std::length_error'
-        what():  basic_string::_M_create
-    ```
-
 *   checking installed package size ... NOTE
     ```
-      installed size is 20.1Mb
+      installed size is 19.1Mb
       sub-directories of 1Mb or more:
-        R         2.0Mb
+        R         1.0Mb
         doc       1.0Mb
         extdata   1.2Mb
         libs     15.4Mb
@@ -2436,7 +2361,7 @@ Run `revdepcheck::revdep_details(, "mapme.biodiversity")` for more info
        16.     └─cli::cli_abort(...)
        17.       └─rlang::abort(...)
       
-      [ FAIL 5 | WARN 1 | SKIP 38 | PASS 560 ]
+      [ FAIL 5 | WARN 2 | SKIP 38 | PASS 560 ]
       Error: Test failures
       Execution halted
     ```
@@ -2678,10 +2603,9 @@ Run `revdepcheck::revdep_details(, "missSBM")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 10.1Mb
+      installed size is 10.0Mb
       sub-directories of 1Mb or more:
-        R      1.0Mb
-        libs   8.0Mb
+        libs   7.9Mb
     ```
 
 # mistyR
@@ -2699,14 +2623,6 @@ Run `revdepcheck::revdep_details(, "mistyR")` for more info
 </details>
 
 ## In both
-
-*   checking installed package size ... NOTE
-    ```
-      installed size is  7.8Mb
-      sub-directories of 1Mb or more:
-        data   4.0Mb
-        doc    3.5Mb
-    ```
 
 *   checking R code for possible problems ... NOTE
     ```
@@ -2858,7 +2774,7 @@ Run `revdepcheck::revdep_details(, "multitool")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  5.1Mb
+      installed size is  5.0Mb
       sub-directories of 1Mb or more:
         doc   4.3Mb
     ```
@@ -2954,10 +2870,10 @@ Run `revdepcheck::revdep_details(, "nhdplusTools")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  6.6Mb
+      installed size is  8.8Mb
       sub-directories of 1Mb or more:
         data   1.6Mb
-        doc    4.2Mb
+        doc    6.5Mb
     ```
 
 # oncomsm
@@ -3222,9 +3138,9 @@ Run `revdepcheck::revdep_details(, "pgxRpi")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  5.4Mb
+      installed size is  9.7Mb
       sub-directories of 1Mb or more:
-        doc   5.1Mb
+        doc   9.4Mb
     ```
 
 *   checking R code for possible problems ... NOTE
@@ -3415,30 +3331,6 @@ Run `revdepcheck::revdep_details(, "projpred")` for more info
         libs   3.6Mb
     ```
 
-# promises
-
-<details>
-
-* Version: 1.3.2
-* GitHub: https://github.com/rstudio/promises
-* Source code: https://github.com/cran/promises
-* Date/Publication: 2024-11-28 00:40:02 UTC
-* Number of recursive dependencies: 63
-
-Run `revdepcheck::revdep_details(, "promises")` for more info
-
-</details>
-
-## In both
-
-*   checking installed package size ... NOTE
-    ```
-      installed size is  8.5Mb
-      sub-directories of 1Mb or more:
-        doc    4.6Mb
-        libs   3.5Mb
-    ```
-
 # Prostar
 
 <details>
@@ -3514,6 +3406,13 @@ Run `revdepcheck::revdep_details(, "pseudohouseholds")` for more info
 </details>
 
 ## In both
+
+*   checking installed package size ... NOTE
+    ```
+      installed size is 12.8Mb
+      sub-directories of 1Mb or more:
+        data  12.5Mb
+    ```
 
 *   checking data for non-ASCII characters ... NOTE
     ```
@@ -3629,47 +3528,6 @@ Run `revdepcheck::revdep_details(, "RAINBOWR")` for more info
       installed size is 42.9Mb
       sub-directories of 1Mb or more:
         libs  41.5Mb
-    ```
-
-# receptiviti
-
-<details>
-
-* Version: 0.1.8
-* GitHub: https://github.com/Receptiviti/receptiviti-r
-* Source code: https://github.com/cran/receptiviti
-* Date/Publication: 2024-03-29 18:00:03 UTC
-* Number of recursive dependencies: 65
-
-Run `revdepcheck::revdep_details(, "receptiviti")` for more info
-
-</details>
-
-## In both
-
-*   checking tests ...
-    ```
-      Running ‘testthat.R’
-     ERROR
-    Running the tests in ‘tests/testthat.R’ failed.
-    Complete output:
-      > library(testthat)
-      > library(receptiviti)
-      > 
-      > test_check("receptiviti")
-      Status: ERROR
-      Message: Invalid header received from client.
-    ...
-       7. └─receptiviti::receptiviti(...)
-      ── Failure ('test-receptiviti_status.R:5:3'): failures works ───────────────────
-      receptiviti_status(...) is not NULL
-      
-      `actual` is a list
-      `expected` is NULL
-      
-      [ FAIL 2 | WARN 0 | SKIP 2 | PASS 6 ]
-      Error: Test failures
-      Execution halted
     ```
 
 # regmedint
@@ -3891,9 +3749,9 @@ Run `revdepcheck::revdep_details(, "sdmTMB")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 98.5Mb
+      installed size is 98.3Mb
       sub-directories of 1Mb or more:
-        libs  96.6Mb
+        libs  96.4Mb
     ```
 
 # sentopics
@@ -3953,10 +3811,10 @@ Run `revdepcheck::revdep_details(, "Seurat")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 16.4Mb
+      installed size is 16.0Mb
       sub-directories of 1Mb or more:
-        R      2.0Mb
-        libs  13.5Mb
+        R      1.7Mb
+        libs  13.4Mb
     ```
 
 *   checking Rd cross-references ... NOTE
@@ -4044,10 +3902,10 @@ Run `revdepcheck::revdep_details(, "shiny")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 14.2Mb
+      installed size is 16.0Mb
       sub-directories of 1Mb or more:
-        R     2.0Mb
-        www  10.4Mb
+        R     1.5Mb
+        www  12.7Mb
     ```
 
 # shiny.worker
@@ -4096,9 +3954,8 @@ Run `revdepcheck::revdep_details(, "sigminer")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  6.9Mb
+      installed size is  6.7Mb
       sub-directories of 1Mb or more:
-        R         1.0Mb
         extdata   1.0Mb
         help      1.7Mb
         libs      1.6Mb
@@ -4476,14 +4333,6 @@ Run `revdepcheck::revdep_details(, "SPARSEMODr")` for more info
 
 ## In both
 
-*   checking installed package size ... NOTE
-    ```
-      installed size is  5.4Mb
-      sub-directories of 1Mb or more:
-        doc    1.2Mb
-        libs   4.0Mb
-    ```
-
 *   checking dependencies in R code ... NOTE
     ```
     Namespaces in Imports field not imported from:
@@ -4625,10 +4474,10 @@ Run `revdepcheck::revdep_details(, "squat")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 20.0Mb
+      installed size is 21.3Mb
       sub-directories of 1Mb or more:
-        data   1.1Mb
-        help   1.2Mb
+        data   2.5Mb
+        help   1.1Mb
         libs  17.5Mb
     ```
 
@@ -4704,7 +4553,7 @@ Run `revdepcheck::revdep_details(, "stars")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  6.8Mb
+      installed size is  6.9Mb
       sub-directories of 1Mb or more:
         doc   2.9Mb
         nc    1.7Mb
@@ -4997,7 +4846,7 @@ Run `revdepcheck::revdep_details(, "tglkmeans")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  5.5Mb
+      installed size is  5.4Mb
       sub-directories of 1Mb or more:
         libs   5.2Mb
     ```
@@ -5218,9 +5067,9 @@ Run `revdepcheck::revdep_details(, "tsgarch")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 144.2Mb
+      installed size is 144.3Mb
       sub-directories of 1Mb or more:
-        libs  143.1Mb
+        libs  143.2Mb
     ```
 
 # tsmarch
@@ -5327,10 +5176,10 @@ Run `revdepcheck::revdep_details(, "UCSCXenaShiny")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  8.0Mb
+      installed size is 10.1Mb
       sub-directories of 1Mb or more:
         data       1.1Mb
-        doc        1.4Mb
+        doc        3.5Mb
         shinyapp   4.9Mb
     ```
 
