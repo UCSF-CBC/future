@@ -17,7 +17,7 @@ Run `revdepcheck::revdep_details(, "TriDimRegression")` for more info
 *   checking whether package ‘TriDimRegression’ can be installed ... ERROR
     ```
     Installation failed.
-    See ‘/c4/home/henrik/repositories/future/revdep/checks/TriDimRegression/new/TriDimRegression.Rcheck/00install.out’ for details.
+    See ‘/c4/home/henrik/futureverse/future/revdep/checks/TriDimRegression/new/TriDimRegression.Rcheck/00install.out’ for details.
     ```
 
 ## Installation
@@ -32,7 +32,7 @@ Error in loadNamespace(x) : there is no package called ‘rstantools’
 Calls: loadNamespace -> withRestarts -> withOneRestart -> doWithOneRestart
 Execution halted
 ERROR: configuration failed for package ‘TriDimRegression’
-* removing ‘/c4/home/henrik/repositories/future/revdep/checks/TriDimRegression/new/TriDimRegression.Rcheck/TriDimRegression’
+* removing ‘/c4/home/henrik/futureverse/future/revdep/checks/TriDimRegression/new/TriDimRegression.Rcheck/TriDimRegression’
 
 
 ```
@@ -46,7 +46,7 @@ Error in loadNamespace(x) : there is no package called ‘rstantools’
 Calls: loadNamespace -> withRestarts -> withOneRestart -> doWithOneRestart
 Execution halted
 ERROR: configuration failed for package ‘TriDimRegression’
-* removing ‘/c4/home/henrik/repositories/future/revdep/checks/TriDimRegression/old/TriDimRegression.Rcheck/TriDimRegression’
+* removing ‘/c4/home/henrik/futureverse/future/revdep/checks/TriDimRegression/old/TriDimRegression.Rcheck/TriDimRegression’
 
 
 ```
