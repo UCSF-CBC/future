@@ -667,9 +667,14 @@ getExpression.Future <- local({
     ##  mdebug("getExpression() ...")
     args <- list(...)
 
-    local <- future$local
-    split <- future$split
+    local <- args$local
+    if (is.null(local)) local <- future$local
     
+    ## To be cleaned up /HB 2025-01-02
+    persistent <- future$persistent
+    if (isTRUE(persistent)) local <- FALSE
+    
+    split <- future$split
     if (is.null(split)) split <- FALSE
     stop_if_not(is.logical(split), length(split) == 1L, !is.na(split))
    
