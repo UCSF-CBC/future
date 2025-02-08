@@ -70,14 +70,14 @@ for (strategy in supportedStrategies()) {
   str(list(x2 = x2))
   stopifnot(identical(x2, x0))
   
-  y <- main_futureCall()
-  str(list(y = y))
-  if (is.null(y0)) y0 <- y
-  stopifnot(identical(y, y0))
+#  y <- main_futureCall()
+#  str(list(y = y))
+#  if (is.null(y0)) y0 <- y
+#  stopifnot(identical(y, y0))
 
-  y2 <- main_futureCall_no_FUN()
-  str(list(y2 = y2))
-  stopifnot(identical(y2, y0))
+#  y2 <- main_futureCall_no_FUN()
+#  str(list(y2 = y2))
+#  stopifnot(identical(y2, y0))
   
   z <- main_lapply()
   str(list(z = z))

@@ -223,6 +223,7 @@ getGlobalsAndPackages <- function(expr, envir = parent.frame(), tweak = tweakExp
         }
         globals <- globals[-idxs[!keep]]
         if (debug) {
+          names <- names(globals)
           idxs <- which(names == "future.call.arguments")
           mdebugf("- 'future.call.arguments' global entries:")
           mstr(globals[idxs])

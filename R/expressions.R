@@ -452,7 +452,7 @@ evalFuture <- function(
     names <- names(globals)
     envs <- list()
     oldEnvs <- list()
-    env <- envir
+    env <- globalenv()
     repeat {
       if (identical(env, emptyenv())) break
       if (isNamespace(env)) {
