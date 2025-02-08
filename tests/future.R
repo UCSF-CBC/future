@@ -2,6 +2,8 @@ source("incl/start.R")
 
 message("*** future() ...")
 
+message("*** future() w/ lazy = TRUE ...")
+
 f <- future({
   42L
 }, lazy = TRUE)
@@ -11,6 +13,20 @@ y <- value(f)
 print(y)
 stopifnot(y == 42L)
 
+message("*** future() w/ lazy = TRUE ... DONE")
+
+message("*** future() w/ lazy = TRUE in local() ...")
+
+local({
+  a <- 42L
+  f <- future({ a }, lazy = TRUE)
+  a <- 0L
+  y <- value(f)
+  print(y)
+  stopifnot(y == 42L)
+})
+
+message("*** future() w/ lazy = TRUE in local() ... DONE")
 
 message("*** future() w/ gc = TRUE ...")
 
