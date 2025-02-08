@@ -64,15 +64,10 @@ for (cores in 1:availCores) {
           if (globals) {
             stopifnot(all.equal(v1, v0))
           } else {
-            if (!lazy && strategy %in% c("sequential", "multicore")) {
-              stopifnot(all.equal(v1, v0))
-            } else {
-              stopifnot(inherits(res1, "error"))
-            }
+            stopifnot(inherits(res1, "error"))
           }
         } else {
           if (!inherits(res1, "error")) {
-            utils::str(list(strategy = strategy, globals = globals, lazy = lazy, v0 = v0, v1 = v1))
             stopifnot(all.equal(v1, v0))
           } else {
             stopifnot(!globals)
@@ -93,14 +88,9 @@ for (cores in 1:availCores) {
         utils::str(list(strategy = strategy, globals = globals, lazy = lazy, v0 = v0, res2 = res2))
         if (isTRUE(as.logical(Sys.getenv("R_CHECK_IDEAL")))) {
           message("R_CHECK_IDEAL=TRUE")
-          if (globals) {
-            stopifnot(all.equal(v2, v0))
-          } else {
-            stopifnot(all.equal(v2, v0))
-          }
+          stopifnot(all.equal(v2, v0))
         } else {
           if (!inherits(res2, "error")) {
-            utils::str(list(strategy = strategy, globals = globals, lazy = lazy, v0 = v0, v2 = v2))
             stopifnot(all.equal(v2, v0))
           } else {
             stopifnot(!globals)
@@ -120,14 +110,9 @@ for (cores in 1:availCores) {
         utils::str(list(strategy = strategy, globals = globals, lazy = lazy, v0 = v0, res3 = res3))
         if (isTRUE(as.logical(Sys.getenv("R_CHECK_IDEAL")))) {
           message("R_CHECK_IDEAL=TRUE")
-          if (globals) {
-            stopifnot(all.equal(v3, v0))
-          } else {
-            stopifnot(all.equal(v3, v0))
-          }
+          stopifnot(all.equal(v3, v0))
         } else {
           if (!inherits(res3, "error")) {
-            utils::str(list(strategy = strategy, globals = globals, lazy = lazy, v0 = v0, v3 = v3, res3 = res3))
             stopifnot(all.equal(v3, v0))
           } else {
             stopifnot(!globals)
@@ -163,10 +148,12 @@ for (cores in 1:availCores) {
               message("future.globals.globalsOf.locals=TRUE")
               if (globals) {
                 stopifnot(identical(v4, truth))
-              } else if (lazy) {
-                stopifnot(inherits(v4, "error"))
               } else {
-                stopifnot(identical(v4, truth))
+                if (lazy) {
+                  stopifnot(inherits(v4, "error"))
+                } else {
+                  stopifnot(identical(v4, truth))
+                }
               }
             } else {
               message("future.globals.globalsOf.locals=FALSE")
@@ -182,23 +169,12 @@ for (cores in 1:availCores) {
               message("future.globals.globalsOf.locals=TRUE")
               if (globals) {
                 stopifnot(identical(v4, truth))
-              } else if (lazy) {
-                stopifnot(inherits(v4, "error"))
-              } else if (strategy %in% c("sequential", "multicore")) {
-                stopifnot(inherits(v4, "error"))
               } else {
                 stopifnot(inherits(v4, "error"))
               }
             } else {
               message("future.globals.globalsOf.locals=FALSE")
-              if (strategy %in% c("sequential", "multicore")) {
-                stopifnot(inherits(v4, "error"))
-              } else if (lazy) {
-                stopifnot(inherits(v4, "error"))
-              } else {
-                stopifnot(inherits(v4, "error"))
-#                stopifnot(identical(v4, truth))
-              }
+              stopifnot(inherits(v4, "error"))
             }
           }
         })

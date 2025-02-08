@@ -87,7 +87,7 @@ for (strategy in supportedStrategies()) {
       if (isTRUE(getOption("future.globals.globalsOf.locals", TRUE))) {
         message("future.globals.globalsOf.locals=TRUE")
         if (strategy %in% c("sequential", "multicore")) {
-          stopifnot(inherits(res, "error"))
+          stopifnot(identical(v, truth))
         } else {
           stopifnot(identical(v, truth))
         }
@@ -145,18 +145,10 @@ for (strategy in supportedStrategies()) {
     message("future.globals.keepWhere=FALSE")
     if (isTRUE(getOption("future.globals.globalsOf.locals", TRUE))) {
       message("future.globals.globalsOf.locals=TRUE")
-      if (strategy %in% c("sequential", "multicore")) {
-        stopifnot(identical(v, 4))    ## <= SERIOUS BUG!
-      } else {
-        stopifnot(identical(v, 4))    ## <= SERIOUS BUG!
-      }
+      stopifnot(identical(v, 4))    ## <= SERIOUS BUG!
     } else {
       message("future.globals.globalsOf.locals=FALSE")
-      if (strategy %in% c("sequential", "multicore")) {
-        stopifnot(inherits(v, "error"))
-      } else {
-        stopifnot(identical(v, truth))
-      }
+      stopifnot(inherits(v, "error"))
     }
   }
 } ## for (strategy ...)
