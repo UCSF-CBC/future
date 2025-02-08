@@ -167,10 +167,10 @@ assign_globals <- function(envir, globals, exclude = getOption("future.assign_gl
         ## * https://github.com/futureverse/future/issues/608
         if (identical(w, emptyenv())) {
           environment(global) <- envir
-          if (debug) mdebugf("- reassign environment for %s", sQuote(name))
+          if (debug) mdebugf("- reassign environment for %s [where=emptyenv()]", sQuote(name))
         } else if (identical(w, globalenv()) && identical(environment(global), globalenv())) {
           environment(global) <- envir
-          if (debug) mdebugf("- reassign environment for %s", sQuote(name))
+          if (debug) mdebugf("- reassign environment for %s [where=globalenv()]", sQuote(name))
         }
 
       }
