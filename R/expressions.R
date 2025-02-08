@@ -445,15 +445,32 @@ evalFuture <- function(
     ...future.globalenv.names <- c(names(.GlobalEnv), "...future.value", "...future.globalenv.names", ".Random.seed")
   }
 
-  ## Attach globals
+  ## Attach globals to the global environment
+  ## Undo changes on exit
   if (length(globals) > 0) {
-    base_attach <- base::attach ## To please R CMD check
-    base_attach(globals, pos = 2L, name = "future:globals", warn.conflicts = FALSE)
-    if (cleanup) {
-      on.exit({
-        detach(name = "future:globals")
-      }, add = TRUE)
+    ## Preserve globals
+    genvOld <- new.env(parent = emptyenv())
+    genv <- globalenv()
+    for (name in names(globals)) {
+      if (exists(name, envir = genv, inherits = FALSE)) {
+        value <- get(name, envir = genv, inherits = FALSE)
+        assign(name, value = value, envir = genvOld, inherits = FALSE)
+      }
     }
+    on.exit({
+      ## Remove globals from the global environment
+      rm(list = names(globals), envir = genv, inherits = FALSE)
+      ## Restore overwritten objects in the global environment
+      for (name in names(genvOld)) {
+        if (exists(name, envir = genvOld, inherits = FALSE)) {
+          value <- get(name, envir = genvOld, inherits = FALSE)
+          assign(name, value = value, envir = genv, inherits = FALSE)
+        }
+      }
+      rm(list = "genvOld")
+    }, add = TRUE)
+    
+    assign_globals(globalenv(), globals = globals)
   }
 
   conditionClassesExclude <- attr(conditionClasses, "exclude", exact = TRUE)

@@ -141,13 +141,16 @@ for (cores in 1:availCores) {
           utils::str(list(strategy = strategy, globals = globals, lazy = lazy, v4 = v4))
 
           if (isTRUE(as.logical(Sys.getenv("R_CHECK_IDEAL")))) {
+            message("R_CHECK_IDEAL=TRUE")
             if (globals) {
               stopifnot(identical(v4, truth))
             } else {
               stopifnot(inherits(v4, "error"))
             }
           } else if (isTRUE(getOption("future.globals.keepWhere", FALSE))) {
+            message("future.globals.keepWhere=TRUE")
             if (isTRUE(getOption("future.globals.globalsOf.locals", TRUE))) {
+              message("future.globals.globalsOf.locals=TRUE")
               if (globals) {
                 stopifnot(identical(v4, truth))
               } else if (lazy) {
@@ -156,6 +159,7 @@ for (cores in 1:availCores) {
                 stopifnot(identical(v4, truth))
               }
             } else {
+              message("future.globals.globalsOf.locals=FALSE")
               if (lazy) {
                 stopifnot(inherits(v4, "error"))
               } else {
@@ -163,17 +167,20 @@ for (cores in 1:availCores) {
               }
             }
           } else {
+            message("future.globals.keepWhere=FALSE")
             if (isTRUE(getOption("future.globals.globalsOf.locals", TRUE))) {
+              message("future.globals.globalsOf.locals=TRUE")
               if (globals) {
                 stopifnot(identical(v4, truth))
               } else if (lazy) {
                 stopifnot(inherits(v4, "error"))
               } else if (strategy %in% c("sequential", "multicore")) {
-                stopifnot(inherits(v4, "error"))
-              } else {
                 stopifnot(identical(v4, truth))
+              } else {
+                stopifnot(inherits(v4, "error"))
               }
             } else {
+              message("future.globals.globalsOf.locals=FALSE")
               if (strategy %in% c("sequential", "multicore")) {
                 stopifnot(inherits(v4, "error"))
               } else if (lazy) {

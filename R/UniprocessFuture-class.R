@@ -33,15 +33,8 @@ run.UniprocessFuture <- function(future, ...) {
   ## also the one that evaluates/resolves/queries it.
   assertOwner(future)
 
-  expr <- getExpression(future, globals = list())
+  expr <- getExpression(future)
   envir <- future$envir
-  envir <- new.env(parent = envir)
-
-  ## Assign globals to separate "globals" enclosure environment?
-  globals <- future$globals
-  if (length(globals) > 0) {
-    envir <- assign_globals(envir, globals = globals, debug = debug)
-  }
 
   ## Run future
   future$state <- 'running'
