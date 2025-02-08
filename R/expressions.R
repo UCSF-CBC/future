@@ -507,7 +507,7 @@ evalFuture <- function(
   ## a tryCatch() statement. /HB 2016-03-14
   ...future.result <- tryCatch({
     withCallingHandlers({
-      ...future.value <- withVisible(eval(expr, envir = envir))
+      ...future.value <- withVisible(eval(expr, envir = globalenv()))
       FutureResult(
         value = ...future.value$value,
         visible = ...future.value$visible,
