@@ -331,7 +331,7 @@ evalFuture <- function(
     ## /HB 2018-12-28
     skip <- getOption("future.makeExpression.skip", c(6L, 3L))
   }
-  
+
   ## Ignore, capture or discard standard output?
   if (is.na(stdout)) {  ## stdout = NA
     ## Don't capture, but also don't block any output
@@ -448,26 +448,44 @@ evalFuture <- function(
   ## Attach globals to the global environment
   ## Undo changes on exit
   if (length(globals) > 0) {
-    ## Preserve globals
-    genvOld <- new.env(parent = emptyenv())
-    genv <- globalenv()
-    for (name in names(globals)) {
-      if (exists(name, envir = genv, inherits = FALSE)) {
-        value <- get(name, envir = genv, inherits = FALSE)
-        assign(name, value = value, envir = genvOld, inherits = FALSE)
+    ## Preserve globals in all environments until the global environment
+    names <- names(globals)
+    envs <- list()
+    oldEnvs <- list()
+    env <- envir
+    repeat {
+      if (identical(env, emptyenv())) break
+      if (isNamespace(env)) {
+        env <- parent.env(env)
+        next
       }
+      
+      oldEnv <- new.env(parent = emptyenv())
+      for (name in names) {
+        if (exists(name, envir = env, inherits = FALSE)) {
+          value <- get(name, envir = env, inherits = FALSE)
+          assign(name, value = value, envir = oldEnv, inherits = FALSE)
+          rm(list = name, envir = env, inherits = FALSE)
+        }
+      }
+      envs <- c(envs, env)
+      oldEnvs <- c(oldEnvs, oldEnv)
+      if (identical(env, globalenv())) break
+      env <- parent.env(env)
     }
+    
     on.exit({
       ## Remove globals from the global environment
       rm(list = names(globals), envir = genv, inherits = FALSE)
-      ## Restore overwritten objects in the global environment
-      for (name in names(genvOld)) {
-        if (exists(name, envir = genvOld, inherits = FALSE)) {
-          value <- get(name, envir = genvOld, inherits = FALSE)
-          assign(name, value = value, envir = genv, inherits = FALSE)
+      ## Restore objects in all modified environments
+      for (ee in seq_along(envs)) {
+        oldEnv <- oldEnvs[[ee]]
+        env <- envs[[ee]]
+        for (name in names(oldEnv)) {
+          value <- get(name, envir = oldEnv, inherits = FALSE)
+          assign(name, value = value, envir = env, inherits = FALSE)
         }
-      }
-      rm(list = "genvOld")
+      } ## for (ee ...)
     }, add = TRUE)
     
     assign_globals(globalenv(), globals = globals)

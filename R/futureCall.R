@@ -28,7 +28,7 @@ futureCall <- function(FUN, args = list(), envir = parent.frame(), lazy = FALSE,
   ## from the current environment in order to identify the globals of 
   ## arguments 'FUN' and 'args', cf. future.apply::future_lapply().
   ## /HB 2018-03-06
-  envir <- environment()
+  globalEnv <- environment()
 #  envir <- new.env(parent = envir)
 
   expr <- quote(do.call(what = FUN, args = args))
@@ -42,7 +42,7 @@ futureCall <- function(FUN, args = list(), envir = parent.frame(), lazy = FALSE,
       if (debug) mdebug("Finding globals ...")
 
 #      expr <- do.call(call, args = c(list("FUN"), list(...)))
-      gp <- getGlobalsAndPackages(expr, envir = envir, tweak = tweakExpression, globals = TRUE)
+      gp <- getGlobalsAndPackages(expr, envir = globalEnv, tweak = tweakExpression, globals = TRUE)
       globals <- gp$globals
       packages <- unique(c(packages, gp$packages))
       gp <- NULL
@@ -55,11 +55,11 @@ futureCall <- function(FUN, args = list(), envir = parent.frame(), lazy = FALSE,
     } else {
       ## globals = FALSE
       globals <- c("FUN", "args")
-      globals <- globalsByName(globals, envir = envir, mustExist = FALSE)
+      globals <- globalsByName(globals, envir = globalEnv, mustExist = FALSE)
     }
   } else if (is.character(globals)) {
     globals <- unique(c(globals, "FUN", "args"))
-    globals <- globalsByName(globals, envir = envir, mustExist = FALSE)
+    globals <- globalsByName(globals, envir = globalEnv, mustExist = FALSE)
   } else if (is.list(globals)) {
     names <- names(globals)
     if (length(globals) > 0 && is.null(names)) {

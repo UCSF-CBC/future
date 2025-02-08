@@ -23,13 +23,11 @@
 futureAssign <- function(x, value, envir = parent.frame(), substitute = TRUE, lazy = FALSE, seed = FALSE, globals = TRUE, packages = NULL, stdout = TRUE, conditions = "condition", earlySignal = FALSE, label = NULL, gc = FALSE, ..., assign.env = envir) {
   stop_if_not(is.character(x), !is.na(x), nzchar(x))
   if (substitute) value <- substitute(value)
-
-
+  
   ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   ## (1) Arguments passed to future()
   ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   future.args <- list(value, envir = envir, lazy = lazy, seed = seed, globals = globals, packages = packages, stdout = stdout, conditions = conditions, earlySignal = earlySignal, label = label, gc = gc, ...)
-
   ## Any arguments set via disposible option?
   args <- getOption("future.disposable", NULL)
   if (!is.null(args)) {
@@ -43,8 +41,8 @@ futureAssign <- function(x, value, envir = parent.frame(), substitute = TRUE, la
   ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   ## Name of "future" saved in parallel with the "promise"
   future_name <- sprintf(".future_%s", x)
-  if (exists(future_name, envir = envir)) {
-    msg <- sprintf("A future with name %s already exists in environment %s: %s", sQuote(future_name), sQuote(environmentName(envir)), hpaste(ls(envir = envir, all.names = TRUE)))
+  if (exists(future_name, envir = assign.env)) {
+    msg <- sprintf("A future with name %s already exists in environment %s: %s", sQuote(future_name), sQuote(environmentName(assign.env)), hpaste(ls(envir = assign.env, all.names = TRUE)))
 ##    warning(msg)
   }
 
@@ -52,7 +50,7 @@ futureAssign <- function(x, value, envir = parent.frame(), substitute = TRUE, la
   ## a variable as a "promise".
   ## NOTE: We make sure to pass 'envir' in order for globals to
   ## be located properly.
-  future <- do.call(future::future, args = future.args, envir = assign.env)
+  future <- do.call(future::future, args = future.args, envir = envir)
 
   ## Assign future to assignment environment
   future_without_gc <- future
@@ -61,7 +59,7 @@ futureAssign <- function(x, value, envir = parent.frame(), substitute = TRUE, la
 
 
   ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  ## (2) Create promise holding the future's value
+  ## (3) Create promise holding the future's value
   ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   ## Here value may throw an error causing the assign value to be a
   ## "delayed" error, which will be thrown each time the variable is
