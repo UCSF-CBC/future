@@ -464,8 +464,11 @@ evalFuture <- function(
       for (name in names) {
         if (exists(name, envir = env, inherits = FALSE)) {
           value <- get(name, envir = env, inherits = FALSE)
-          assign(name, value = value, envir = oldEnv, inherits = FALSE)
-          rm(list = name, envir = env, inherits = FALSE)
+          ## Environment might be locked
+          tryCatch({
+            rm(list = name, envir = env, inherits = FALSE)
+            assign(name, value = value, envir = oldEnv, inherits = FALSE)
+          }, error = identity)
         }
       }
       envs <- c(envs, env)
