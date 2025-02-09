@@ -239,8 +239,8 @@ getGlobalsAndPackages <- function(expr, envir = parent.frame(), tweak = tweakExp
       expr <- substitute({
         ## covr: skip=1
         "# future::getGlobalsAndPackages(): wrapping the original future"
-        "# expression in do.call(), because function called uses '...'"
-        "# as a global variable"
+        "# expression in do.call(), because function called uses '...'  "
+        "# as a global variable                                         "
         do.call(function(...) a, args = `future.call.arguments`)
       }, list(a = expr))
       if (debug) {

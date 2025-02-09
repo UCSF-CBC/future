@@ -567,8 +567,8 @@ requestNode <- function(await, workers, timeout = getOption("future.wait.timeout
 getExpression.ClusterFuture <- local({
   tmpl_expr_conditions <- future:::bquote_compile({
     "# future:::getExpression.ClusterFuture(): inject code for instant"
-    "# relaying of 'immediateCondition' objects back to the parent R"
-    "# process via the existing PSOCK channel"
+    "# relaying of 'immediateCondition' objects back to the parent R  "
+    "# process via the existing PSOCK channel                         "
     ...future.makeSendCondition <- base::local({
       sendCondition <- NULL
 
