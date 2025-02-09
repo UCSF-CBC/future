@@ -317,7 +317,7 @@ evalFuture <- function(
     tmpl_expr_local <- bquote_compile(base::local({
       env <- base::environment()
       base::attr(env, "name") <- "future:evalenv"
-      base::rm(list = "env")
+      base::rm(list = "env", inherits = FALSE)
       .(expr)
     }))
     expr <- bquote_apply(tmpl_expr_local)
