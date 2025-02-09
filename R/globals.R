@@ -238,6 +238,9 @@ getGlobalsAndPackages <- function(expr, envir = parent.frame(), tweak = tweakExp
       rm(list = c("a", "future.call.arguments"))
       expr <- substitute({
         ## covr: skip=1
+        "# future::getGlobalsAndPackages(): wrapping the original future"
+        "# expression in do.call(), because function called uses '...'"
+        "# as a global variable"
         do.call(function(...) a, args = `future.call.arguments`)
       }, list(a = expr))
       if (debug) {
@@ -450,13 +453,17 @@ summarize_size_of_globals <- function(globals, sizes = NULL, maxSize = NULL, exp
                      sQuote(names(sizes)), asIEC(sizes), sQuote(classes))
 
   if (is.null(exprOrg)) {
-    msg <- sprintf("The total size of the %d globals exported is %s.", length(globals), asIEC(total_size))
+    msg <- sprintf("The total size of the %d globals exported is %s", length(globals), asIEC(total_size))
   } else {
-    msg <- sprintf("The total size of the %d globals exported for future expression (%s) is %s.", length(globals), sQuote(hexpr(exprOrg)), asIEC(total_size))
+    msg <- sprintf("The total size of the %d globals exported for future expression (%s) is %s", length(globals), sQuote(hexpr(exprOrg)), asIEC(total_size))
   }
 
   if (!is.null(maxSize)) {
-    msg <- sprintf("%s. This exceeds the maximum allowed size of %s (option 'future.globals.maxSize').", msg, asIEC(maxSize))
+    if (total_size > maxSize) {
+      msg <- sprintf("%s. This exceeds the maximum allowed size %s (option 'future.globals.maxSize').", msg, asIEC(maxSize))
+    } else {
+      msg <- sprintf("%s. The maximum allowed size is %s (option 'future.globals.maxSize').", msg, asIEC(maxSize))
+    }
   }
 
   if (n == 1) {

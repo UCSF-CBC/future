@@ -658,7 +658,7 @@ getExpression <- function(future, ...) UseMethod("getExpression")
 #' @export
 getExpression.Future <- local({
   tmpl_expr_evaluate2 <- bquote_compile({
-    ## Evaluate future
+    "# future:::getExpression.Future(): evaluate the future via evalFuture()"
     future:::evalFuture(core = .(core), capture = .(capture), context = .(context), split = .(split), immediateConditionClasses = .(immediateConditionClasses), forwardOptions = .(forwardOptions), local = .(local), cleanup = .(cleanup))
   })
 

@@ -315,9 +315,11 @@ evalFuture <- function(
   ## Evaluate expression in a local() environment?
   if (local) {
     tmpl_expr_local <- bquote_compile(base::local({
+      "# future:::evalFuture(): set convenient name of local environment"
       env <- base::environment()
       base::attr(env, "name") <- "future:evalenv"
       base::rm(list = "env", inherits = FALSE)
+      
       .(expr)
     }))
     expr <- bquote_apply(tmpl_expr_local)

@@ -171,6 +171,9 @@ save_rds <- function(object, pathname, ...) {
 
 
 tmpl_expr_send_immediateConditions_via_file <- future:::bquote_compile({
+  "# future:::getExpression.MulticoreFuture(): inject code for instant"
+  "# relaying of 'immediateCondition' objects back to the parent R"
+  "# process via temporary files on the local file system"
   withCallingHandlers({
     .(expr)
   }, immediateCondition = function(cond) {
