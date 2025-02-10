@@ -19,8 +19,8 @@ Issues with CRAN packages are summarised below.
 * flexFitR
   checking re-building of vignette outputs ... ERROR
 
-* future.apply
-  checking tests ...
+* MOSS
+  checking installed package size ... NOTE
 
 * WARDEN
   checking examples ... ERROR

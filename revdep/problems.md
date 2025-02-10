@@ -257,7 +257,7 @@ Run `revdepcheck::revdep_details(, "batchtools")` for more info
 
 *   checking dependencies in R code ... NOTE
     ```
-    [c4-n4:4025881] OPAL ERROR: Not initialized in file ext2x_client.c at line 112
+    [c4-n38:641746] OPAL ERROR: Not initialized in file ext2x_client.c at line 112
     --------------------------------------------------------------------------
     The application appears to have been direct launched using "srun",
     but OMPI was not built with SLURM's PMI support and therefore cannot
@@ -377,6 +377,13 @@ Run `revdepcheck::revdep_details(, "bigDM")` for more info
     Package suggested but not available for checking: ‘INLA’
     ```
 
+*   checking installed package size ... NOTE
+    ```
+      installed size is  5.3Mb
+      sub-directories of 1Mb or more:
+        data   5.0Mb
+    ```
+
 *   checking data for non-ASCII characters ... NOTE
     ```
       Note: found 940 marked Latin-1 strings
@@ -492,9 +499,9 @@ Run `revdepcheck::revdep_details(, "bsitar")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  8.0Mb
+      installed size is  7.7Mb
       sub-directories of 1Mb or more:
-        R      1.5Mb
+        R      1.3Mb
         data   5.3Mb
     ```
 
@@ -944,7 +951,7 @@ Run `revdepcheck::revdep_details(, "deseats")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  8.5Mb
+      installed size is  8.6Mb
       sub-directories of 1Mb or more:
         libs   7.8Mb
     ```
@@ -967,9 +974,8 @@ Run `revdepcheck::revdep_details(, "dipsaus")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  6.6Mb
+      installed size is  6.2Mb
       sub-directories of 1Mb or more:
-        R      1.0Mb
         libs   4.2Mb
     ```
 
@@ -1124,15 +1130,15 @@ Run `revdepcheck::revdep_details(, "doFuture")` for more info
      ERROR
     Running the tests in ‘tests/foreach_dofuture,globals.R’ failed.
     Last 50 lines of output:
-      [13:43:18.928]  $ x             : int [1:3] 1 2 3
-      [13:43:18.928]  $ ...future.x_ii: num 42
-      [13:43:18.928]  - attr(*, "where")=List of 2
-      [13:43:18.928]   ..$ x             :<environment: R_EmptyEnv> 
+      [19:43:42.669]  $ x             : int [1:3] 1 2 3
+      [19:43:42.669]  $ ...future.x_ii: num 42
+      [19:43:42.669]  - attr(*, "where")=List of 2
+      [19:43:42.669]   ..$ x             :<environment: R_EmptyEnv> 
     ...
-      [13:43:18.997]   ..$ message: chr "'...' used in an incorrect context"
-      [13:43:18.997]   ..$ call   : language doTryCatch(return(expr), name, parentenv, handler)
-      [13:43:18.997]   ..- attr(*, "class")= chr [1:3] "simpleError" "error" "condition"
-      [13:43:19.003] - accumulating results
+      [19:43:42.706]   ..$ message: chr "'...' used in an incorrect context"
+      [19:43:42.706]   ..$ call   : language doTryCatch(return(expr), name, parentenv, handler)
+      [19:43:42.706]   ..- attr(*, "class")= chr [1:3] "simpleError" "error" "condition"
+      [19:43:42.710] - accumulating results
       List of 2
        $ message: chr "'...' used in an incorrect context"
        $ call   : language doTryCatch(return(expr), name, parentenv, handler)
@@ -1182,7 +1188,7 @@ Run `revdepcheck::revdep_details(, "EFAtools")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  7.5Mb
+      installed size is  7.6Mb
       sub-directories of 1Mb or more:
         libs   6.2Mb
     ```
@@ -1325,10 +1331,10 @@ Run `revdepcheck::revdep_details(, "fdacluster")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 23.5Mb
+      installed size is 23.9Mb
       sub-directories of 1Mb or more:
-        R      1.9Mb
-        doc    1.5Mb
+        R      2.1Mb
+        doc    1.6Mb
         help   2.1Mb
         libs  17.5Mb
     ```
@@ -1358,7 +1364,7 @@ Run `revdepcheck::revdep_details(, "fect")` for more info
     ```
       installed size is 14.7Mb
       sub-directories of 1Mb or more:
-        libs  13.4Mb
+        libs  13.3Mb
     ```
 
 *   checking dependencies in R code ... NOTE
@@ -1557,47 +1563,6 @@ Run `revdepcheck::revdep_details(, "forecastML")` for more info
       All declared Imports should be used.
     ```
 
-# future.apply
-
-<details>
-
-* Version: 1.11.3
-* GitHub: https://github.com/futureverse/future.apply
-* Source code: https://github.com/cran/future.apply
-* Date/Publication: 2024-10-27 18:50:02 UTC
-* Number of recursive dependencies: 14
-
-Run `revdepcheck::revdep_details(, "future.apply")` for more info
-
-</details>
-
-## Newly broken
-
-*   checking tests ...
-    ```
-      Running ‘fold.R’
-      Running ‘future_apply.R’
-      Running ‘future_by.R’
-      Running ‘future_eapply.R’
-      Running ‘future_lapply,RNG.R’
-      Running ‘future_lapply,globals.R’
-     ERROR
-    Running the tests in ‘tests/future_lapply,globals.R’ failed.
-    Last 50 lines of output:
-      [13:46:22.657] Packages to be attached in all futures: [n=0] 
-    ...
-      [13:46:22.747] Early signaling: FALSE
-      [13:46:22.747] Owner process: 9a6dfff7-80db-a049-a9e6-f63478497ee1
-      [13:46:22.747] Class: 'SequentialFuture', 'UniprocessFuture', 'Future', 'environment'
-      [13:46:22.749] Chunk #1 of 1 ... DONE
-      [13:46:22.749] Launching 1 futures (chunks) ... DONE
-      [13:46:22.749] Resolving 1 futures (chunks) ...
-      Error in ...future.FUN(...future.X_jj) : 
-        '...' used in an incorrect context
-      Calls: fcn ... resolve.list -> signalConditionsASAP -> signalConditions
-      Execution halted
-    ```
-
 # GeDS
 
 <details>
@@ -1729,7 +1694,7 @@ Run `revdepcheck::revdep_details(, "GeoModels")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  6.1Mb
+      installed size is  6.0Mb
       sub-directories of 1Mb or more:
         R      1.0Mb
         data   1.9Mb
@@ -1828,7 +1793,7 @@ Run `revdepcheck::revdep_details(, "greed")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 38.3Mb
+      installed size is 38.4Mb
       sub-directories of 1Mb or more:
         libs  36.0Mb
     ```
@@ -1997,7 +1962,7 @@ Run `revdepcheck::revdep_details(, "hero")` for more info
 
 *   checking dependencies in R code ... NOTE
     ```
-    [c4-n4:885884] OPAL ERROR: Not initialized in file ext2x_client.c at line 112
+    [c4-n38:1699206] OPAL ERROR: Not initialized in file ext2x_client.c at line 112
     --------------------------------------------------------------------------
     The application appears to have been direct launched using "srun",
     but OMPI was not built with SLURM's PMI support and therefore cannot
@@ -2065,6 +2030,31 @@ Run `revdepcheck::revdep_details(, "httpgd")` for more info
 </details>
 
 ## In both
+
+*   checking tests ...
+    ```
+      Running ‘testthat.R’/software/c4/cbi/software/_rocky8/R-4.4.2-gcc13/lib64/R/bin/BATCH: line 60: 1755604 Segmentation fault      (core dumped) ${R_HOME}/bin/R -f ${in} ${opts} ${R_BATCH_OPTIONS} > ${out} 2>&1
+    
+     ERROR
+    Running the tests in ‘tests/testthat.R’ failed.
+    Last 50 lines of output:
+       1. └─jsonlite::fromJSON(httr::content(res, as = "text")) at test-server.R:62:3
+       2.   └─jsonlite:::parse_and_simplify(...)
+       3.     └─jsonlite:::parseJSON(txt, bigint_as_char)
+       4.       └─jsonlite:::parse_string(txt, bigint_as_char)
+      ── Error ('test-server.R:83:5'): Clear plots ───────────────────────────────────
+    ...
+      1/1 mismatches
+      [1] 503 - 404 == 99
+      
+      [ FAIL 16 | WARN 0 | SKIP 0 | PASS 2 ]
+      Error: Test failures
+      Execution halted
+      
+       *** caught segfault ***
+      address 0x10, cause 'memory not mapped'
+      An irrecoverable exception occurred. R is aborting now ...
+    ```
 
 *   checking C++ specification ... NOTE
     ```
@@ -2244,8 +2234,9 @@ Run `revdepcheck::revdep_details(, "ISAnalytics")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  7.5Mb
+      installed size is  7.8Mb
       sub-directories of 1Mb or more:
+        R      1.0Mb
         data   1.4Mb
         doc    3.8Mb
     ```
@@ -2306,9 +2297,9 @@ Run `revdepcheck::revdep_details(, "JANE")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 14.2Mb
+      installed size is 12.9Mb
       sub-directories of 1Mb or more:
-        libs  14.0Mb
+        libs  12.7Mb
     ```
 
 # keyATM
@@ -2446,6 +2437,29 @@ Run `revdepcheck::revdep_details(, "lidR")` for more info
 </details>
 
 ## In both
+
+*   checking tests ...
+    ```
+      Running ‘testthat.R’/software/c4/cbi/software/_rocky8/R-4.4.2-gcc13/lib64/R/bin/BATCH: line 60: 2521761 Aborted                 (core dumped) ${R_HOME}/bin/R -f ${in} ${opts} ${R_BATCH_OPTIONS} > ${out} 2>&1
+    
+     ERROR
+    Running the tests in ‘tests/testthat.R’ failed.
+    Complete output:
+      > Sys.setenv("R_TESTS" = "")
+      > 
+      > library(testthat)
+      > library(lidR)
+      > test_check("lidR")
+      Tests using raster: terra 
+      Tests using future: TRUE 
+      Tests using OpenMP thread: 32 
+      Tests using rlas: 1.8.0 
+      OGR: Unsupported geometry type
+      OGR: Unsupported geometry type
+      Chunk 1 of 1 (100%): state ✓
+      terminate called after throwing an instance of 'std::length_error'
+        what():  basic_string::_M_create
+    ```
 
 *   checking installed package size ... NOTE
     ```
@@ -2897,6 +2911,15 @@ Run `revdepcheck::revdep_details(, "MOSS")` for more info
 
 </details>
 
+## Newly broken
+
+*   checking installed package size ... NOTE
+    ```
+      installed size is  5.1Mb
+      sub-directories of 1Mb or more:
+        doc   1.5Mb
+    ```
+
 ## In both
 
 *   checking Rd files ... NOTE
@@ -2955,9 +2978,9 @@ Run `revdepcheck::revdep_details(, "multitool")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  5.0Mb
+      installed size is  5.4Mb
       sub-directories of 1Mb or more:
-        doc   4.3Mb
+        doc   4.7Mb
     ```
 
 # nebula
@@ -3342,9 +3365,9 @@ Run `revdepcheck::revdep_details(, "pgxRpi")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  5.4Mb
+      installed size is  5.7Mb
       sub-directories of 1Mb or more:
-        doc   5.1Mb
+        doc   5.4Mb
     ```
 
 *   checking R code for possible problems ... NOTE
@@ -3703,6 +3726,47 @@ Run `revdepcheck::revdep_details(, "RAINBOWR")` for more info
         libs  41.5Mb
     ```
 
+# receptiviti
+
+<details>
+
+* Version: 0.1.8
+* GitHub: https://github.com/Receptiviti/receptiviti-r
+* Source code: https://github.com/cran/receptiviti
+* Date/Publication: 2024-03-29 18:00:03 UTC
+* Number of recursive dependencies: 65
+
+Run `revdepcheck::revdep_details(, "receptiviti")` for more info
+
+</details>
+
+## In both
+
+*   checking tests ...
+    ```
+      Running ‘testthat.R’
+     ERROR
+    Running the tests in ‘tests/testthat.R’ failed.
+    Complete output:
+      > library(testthat)
+      > library(receptiviti)
+      > 
+      > test_check("receptiviti")
+      Status: ERROR
+      Message: Invalid header received from client.
+    ...
+       7. └─receptiviti::receptiviti(...)
+      ── Failure ('test-receptiviti_status.R:5:3'): failures works ───────────────────
+      receptiviti_status(...) is not NULL
+      
+      `actual` is a list
+      `expected` is NULL
+      
+      [ FAIL 2 | WARN 0 | SKIP 2 | PASS 6 ]
+      Error: Test failures
+      Execution halted
+    ```
+
 # regmedint
 
 <details>
@@ -3922,9 +3986,9 @@ Run `revdepcheck::revdep_details(, "sdmTMB")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 97.9Mb
+      installed size is 97.7Mb
       sub-directories of 1Mb or more:
-        libs  96.1Mb
+        libs  95.8Mb
     ```
 
 # sentopics
@@ -3988,7 +4052,7 @@ Run `revdepcheck::revdep_details(, "Seurat")` for more info
       installed size is 16.1Mb
       sub-directories of 1Mb or more:
         R      1.7Mb
-        libs  13.5Mb
+        libs  13.4Mb
     ```
 
 *   checking Rd cross-references ... NOTE
@@ -4050,10 +4114,10 @@ Run `revdepcheck::revdep_details(, "shapr")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 13.2Mb
+      installed size is 13.9Mb
       sub-directories of 1Mb or more:
         doc    4.2Mb
-        libs   7.8Mb
+        libs   8.5Mb
     ```
 
 *   checking Rd cross-references ... NOTE
@@ -4456,7 +4520,7 @@ Run `revdepcheck::revdep_details(, "SpaDES.core")` for more info
 
 *   checking package dependencies ... NOTE
     ```
-    Packages suggested but not available for checking: 'archive', 'NLMR'
+    Package suggested but not available for checking: ‘NLMR’
     ```
 
 *   checking installed package size ... NOTE
@@ -4729,11 +4793,11 @@ Run `revdepcheck::revdep_details(, "squat")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 19.9Mb
+      installed size is 21.8Mb
       sub-directories of 1Mb or more:
-        data   1.1Mb
+        data   1.5Mb
         help   1.1Mb
-        libs  17.5Mb
+        libs  19.0Mb
     ```
 
 # ssdtools
@@ -4807,8 +4871,9 @@ Run `revdepcheck::revdep_details(, "stars")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  6.8Mb
+      installed size is  7.3Mb
       sub-directories of 1Mb or more:
+        R     1.0Mb
         doc   2.9Mb
         nc    1.7Mb
     ```
@@ -5025,7 +5090,7 @@ Run `revdepcheck::revdep_details(, "targeted")` for more info
 * GitHub: https://github.com/ropensci/targets
 * Source code: https://github.com/cran/targets
 * Date/Publication: 2025-01-31 16:50:02 UTC
-* Number of recursive dependencies: 159
+* Number of recursive dependencies: 157
 
 Run `revdepcheck::revdep_details(, "targets")` for more info
 
@@ -5056,7 +5121,7 @@ Run `revdepcheck::revdep_details(, "tenm")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  5.9Mb
+      installed size is  6.0Mb
       sub-directories of 1Mb or more:
         extdata   5.0Mb
     ```
@@ -5321,9 +5386,9 @@ Run `revdepcheck::revdep_details(, "tsgarch")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 144.2Mb
+      installed size is 144.3Mb
       sub-directories of 1Mb or more:
-        libs  143.1Mb
+        libs  143.2Mb
     ```
 
 # tsmarch
@@ -5367,8 +5432,9 @@ Run `revdepcheck::revdep_details(, "tsmarch")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 21.5Mb
+      installed size is 22.0Mb
       sub-directories of 1Mb or more:
+        R      1.0Mb
         doc    1.6Mb
         libs  18.5Mb
     ```
@@ -5635,10 +5701,10 @@ Run `revdepcheck::revdep_details(, "wru")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  7.5Mb
+      installed size is  8.2Mb
       sub-directories of 1Mb or more:
-        data   3.5Mb
-        help   1.9Mb
+        data   4.0Mb
+        help   2.1Mb
         libs   1.9Mb
     ```
 
