@@ -236,11 +236,46 @@ getGlobalsAndPackages <- function(expr, envir = parent.frame(), tweak = tweakExp
       ## To please R CMD check
       a <- `future.call.arguments` <- NULL
       rm(list = c("a", "future.call.arguments"))
+
+      ## If ...future.FUN() in globals, then ...
+      if ("...future.FUN" %in% names(globals)) {
+        envFUN <- environment(globals[["...future.FUN"]])
+        ## Update environment of FUN(), unless it's a primitive function
+        ## or a function in a namespace
+        if (!is.null(envFUN) && !isNamespace(envFUN)) {
+          expr <- substitute({
+            "# future::getGlobalsAndPackages(): FUN() uses '...' internally "
+            "# without having an '...' argument. This means '...' is treated"
+            "# as a global variable. This may happen when FUN() is an       "
+            "# anonymous function.                                          "
+            "#                                                              "
+            "# If an anonymous function, we will make sure to restore the   "
+            "# function environment of FUN() to the calling environment.    "
+            "# We assume FUN() an anonymous function if it lives in the     "
+            "# global environment, which is where globals are written.      "
+            penv <- env <- environment(...future.FUN)
+            repeat {
+              if (identical(env, globalenv()) || identical(env, emptyenv()))
+                break
+              penv <- env
+              env <- parent.env(env)
+            }
+            if (identical(penv, globalenv())) {
+              environment(...future.FUN) <- environment()
+            } else if (!identical(penv, emptyenv()) && !is.null(penv) && !isNamespace(penv)) {
+              parent.env(penv) <- environment()
+            }
+            rm(list = c("env", "penv"), inherits = FALSE)
+            a
+          }, list(a = expr))
+        }
+      }
+      
       expr <- substitute({
-        ## covr: skip=1
         "# future::getGlobalsAndPackages(): wrapping the original future"
         "# expression in do.call(), because function called uses '...'  "
         "# as a global variable                                         "
+        ## covr: skip=1
         do.call(function(...) a, args = `future.call.arguments`)
       }, list(a = expr))
       if (debug) {
