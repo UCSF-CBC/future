@@ -1,5 +1,9 @@
 source("incl/start.R")
 
+## Avoid 'Error: C stack usage  7971940 is too close to the limit'
+## on R (< 4.1.0)
+if (getRversion() < "4.1") options(future.debug = FALSE)
+
 message("*** Demos ...")
 
 message("*** Fibonacci demo of the 'future' package ...")

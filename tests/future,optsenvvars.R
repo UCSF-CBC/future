@@ -55,9 +55,14 @@ for (strategy in strategies) {
 
   ## Any changed?
   for (name in names(old_envvars)) {
-      if (!identical(envvars[[name]], old_envvars[[name]])) {
-          stop(sprintf("Detected modified environment variable: %s=%s (was %s)", name, sQuote(envvars[[name]]), sQuote(old_envvars[[name]])))
+    if (!identical(envvars[[name]], old_envvars[[name]])) {
+      if (getRversion() < "4.1.0") {
+        old_envvars[[name]] <- sub("=$", "", old_envvars[[name]])
       }
+      if (!identical(envvars[[name]], old_envvars[[name]])) {
+        stop(sprintf("Detected modified environment variable: %s=%s (was %s)", name, sQuote(envvars[[name]]), sQuote(old_envvars[[name]])))
+      }
+    }
   }
 
   stopifnot(all.equal(envvars, old_envvars))
