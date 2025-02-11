@@ -34,9 +34,6 @@ args <- list(x = 42, y = 12)
 v0 <- do.call(function(x, y) a * (x - y), args = args)
 
 for (cores in 1:availCores) {
-  ## Speed up CRAN checks: Skip on CRAN Windows 32-bit
-  if (!fullTest && isWin32) next
-  
   message(sprintf("Testing with %d cores ...", cores))
   options(mc.cores = cores)
   strategies <- supportedStrategies(cores)

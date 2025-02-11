@@ -23,7 +23,7 @@ for (cores in 1:min(2L, availableCores("multicore"))) {
     f <- multicore({
       42L
     }, globals = globals)
-    stopifnot(inherits(f, "MulticoreFuture") || ((cores ==1 || !supportsMulticore()) && inherits(f, "SequentialFuture")))
+    stopifnot(inherits(f, "MulticoreFuture") || ((cores == 1 || !supportsMulticore()) && inherits(f, "SequentialFuture")))
   
     print(resolved(f))
     y <- value(f)
@@ -71,7 +71,7 @@ for (cores in 1:min(2L, availableCores("multicore"))) {
     print(f)
     v <- value(f, signal = FALSE)
     print(v)
-    stopifnot(inherits(v, "simpleError"))
+    stopifnot(inherits(v, "error"))
   
     res <- try(value(f), silent = TRUE)
     print(res)

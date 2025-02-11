@@ -4,9 +4,6 @@ message("*** ClusterRegistry() ... ")
 
 allCores <- 1:availCores
 
-## Speed up CRAN checks: Skip on CRAN Windows 32-bit
-if (isWin32) allCores <- NULL
-
 for (cores in allCores) {
   message(sprintf("Testing with %d cores ...", cores))
   options(mc.cores = cores)

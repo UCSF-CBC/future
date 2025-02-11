@@ -4,9 +4,6 @@ message("*** Futures - undo R options and environment variables ...")
 
 strategies <- supportedStrategies()
 
-## Speed up CRAN checks: Skip on CRAN Windows 32-bit
-if (!fullTest && isWin32) strategies <- NULL
-
 options(digits = 6L)
 Sys.setenv(R_DEFAULT_INTERNET_TIMEOUT = "300")
 old_options <- options()

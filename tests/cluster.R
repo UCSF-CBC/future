@@ -2,15 +2,12 @@ source("incl/start.R")
 options(future.debug = FALSE)
 message("*** cluster() ...")
 
-message("Library paths: ", paste(sQuote(.libPaths()), collapse = ", "))
+message("Library paths: ", commaq(.libPaths()))
 message("Package path: ", sQuote(system.file(package = "future")))
 
 types <- "PSOCK"
 
-## Speed up CRAN checks: Skip on CRAN Windows 32-bit
-if (isWin32) types <- NULL
-
-if (supportsMulticore() && !on_solaris) types <- c(types, "FORK")
+if (supportsMulticore()) types <- c(types, "FORK")
 
 ## WORKAROUND: covr::package_coverage() -> merge_coverage() -> ... produces
 ## "Error in readRDS(x) : error reading from connection" for type = "FORK".
@@ -49,7 +46,7 @@ for (type in types) {
     v <- grep("^[.][.][.]future[.]", v, invert = TRUE, value = TRUE)
     if (length(v) > 0) {
       stop(sprintf("Stray variables in the global environment of %s: %s",
-           class(f)[1], paste(sQuote(v), collapse = ", ")))
+           class(f)[1], commaq(v)))
     }
 
     ## No global variables
@@ -116,7 +113,7 @@ for (type in types) {
     print(f)
     v <- value(f, signal = FALSE)
     print(v)
-    stopifnot(inherits(v, "simpleError"))
+    stopifnot(inherits(v, "error"))
   
     res <- tryCatch(value(f), error = identity)
     print(res)
@@ -171,7 +168,7 @@ for (type in types) {
     v <- grep("^[.][.][.]future[.]", v, invert = TRUE, value = TRUE)
     if (length(v) > 0) {
       stop(sprintf("Stray variables in the global environment of %s: %s",
-           class(f)[1], paste(sQuote(v), collapse = ", ")))
+           class(f)[1], commaq(v)))
     }
 
     ## Sanity checks
@@ -238,8 +235,6 @@ for (type in types) {
 
 library("parallel")
 for (type in types) {
-  if (on_solaris) next
- 
   message(sprintf("Test set #2 with cluster type %s ...", sQuote(type)))
 
   message("*** cluster() - setDefaultCluster() ...")

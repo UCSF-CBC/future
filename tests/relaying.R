@@ -31,7 +31,7 @@ for (ss in seq_along(strategies)) {
         1L
       }, conditions = structure("condition", exclude = exclude))
     })
-    message("  class: ", paste(sQuote(class(f)), collapse = ", "))
+    message("  class: ", commaq(class(f)))
     stopifnot(length(relay$stdout) == 0L)
     stopifnot(length(relay$msgs) == 0L)
     
@@ -85,7 +85,7 @@ for (ss in seq_along(strategies)) {
     fs[[1]] <- future({ cat("O1\n"); message("M1"); 1L })
     fs[[2]] <- future({ cat("O2\n"); message("M2"); 2L })
   })
-  message("  class: ", paste(sQuote(class(fs[[1]])), collapse = ", "))
+  message("  class: ", commaq(class(fs[[1]])))
   stopifnot(length(relay$stdout) == 0L)
   stopifnot(length(relay$msgs) == 0L)
 
@@ -142,7 +142,7 @@ for (ss in seq_along(strategies)) {
     fs[[1]] <- future({ cat("O1\n"); Sys.sleep(1); message("M1"); 1L })
     fs[[2]] <- future({ cat("O2\n"); message("M2"); 2L })
   })
-  message("  class: ", paste(sQuote(class(fs[[1]])), collapse = ", "))
+  message("  class: ", commaq(class(fs[[1]])))
   stopifnot(length(relay$stdout) == 0L)
   stopifnot(length(relay$msgs) == 0L)
 

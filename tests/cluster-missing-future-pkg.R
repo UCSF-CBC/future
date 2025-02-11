@@ -3,15 +3,12 @@ options(future.debug = FALSE)
 
 message("*** cluster() ...")
 
-message("Library paths: ", paste(sQuote(.libPaths()), collapse = ", "))
+message("Library paths: ", commaq(.libPaths()))
 message("Package path: ", sQuote(system.file(package = "future")))
 
 types <- "PSOCK"
 
-## Speed up CRAN checks: Skip on CRAN Windows 32-bit
-if (isWin32) types <- NULL
-
-if (supportsMulticore() && !on_solaris) types <- c(types, "FORK")
+if (supportsMulticore()) types <- c(types, "FORK")
 
 setupClusterWithoutPkgs <- function(type = "PSOCK", withouts = c("future")) {
   message("setupClusterWithoutPkgs() ...")

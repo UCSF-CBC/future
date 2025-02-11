@@ -32,7 +32,7 @@ cores <- availableCores()
 message("Number of available cores: ", cores)
 workers <- availableWorkers()
 nworkers <- length(workers)
-message(sprintf("Available workers: [n = %d] %s", nworkers, hpaste(sQuote(workers))))
+message(sprintf("Available workers: [n = %d] %s", nworkers, commaq(workers)))
 
 allButOneCore <- function() max(1L, future::availableCores() - 1L)
 allButOneWorker <- function() {
@@ -41,9 +41,6 @@ allButOneWorker <- function() {
 }
 
 for (strategy in strategies) {
-  ## Speed up CRAN checks: Skip on CRAN Windows 32-bit
-  if (!fullTest && isWin32) next
-
   message("Type of future: ", strategy)
 
   evaluator <- get(strategy, mode = "function")

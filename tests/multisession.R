@@ -4,9 +4,6 @@ library("listenv")
 message("*** multisession() ...")
 
 for (cores in 1:availCores) {
-  ## Speed up CRAN checks: Skip on CRAN Windows 32-bit
-  if (!fullTest && isWin32) next
-  
   message(sprintf("Testing with %d cores ...", cores))
   options(mc.cores = cores)
 
@@ -71,7 +68,7 @@ for (cores in 1:availCores) {
   print(f)
   v <- value(f, signal = FALSE)
   print(v)
-  stopifnot(inherits(v, "simpleError"))
+  stopifnot(inherits(v, "error"))
 
   res <- try(value(f), silent = TRUE)
   print(res)

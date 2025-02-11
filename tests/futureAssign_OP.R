@@ -3,9 +3,6 @@ source("incl/start.R")
 message("*** %<-% ...")
 
 for (cores in 1:availCores) {
-  ## Speed up CRAN checks: Skip on CRAN Windows 32-bit
-  if (!fullTest && isWin32) next
-  
   message(sprintf("Testing with %d cores ...", cores))
   options(mc.cores = cores)
 

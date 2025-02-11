@@ -130,7 +130,7 @@ for (strategy in supportedStrategies()) {
   rm(list = names(globals))
   y <- tryCatch(value(f), error = identity)
   if (!inherits(f, c("SequentialFuture", "UniprocessFuture", "MulticoreFuture"))) {
-    stopifnot(inherits(y, "simpleError"))
+    stopifnot(inherits(y, "error"))
   }
 
   

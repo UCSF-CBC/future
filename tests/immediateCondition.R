@@ -78,8 +78,8 @@ for (ss in seq_along(strategies)) {
       42L
     }, label = "single-future")
   })
-  message("  class: ", paste(sQuote(class(f)), collapse = ", "))
-  message(sprintf("  msgs [n=%d]: %s", length(msgs), paste(sQuote(msgs), collapse = ", ")))
+  message("  class: ", commaq(class(f)))
+  message(sprintf("  msgs [n=%d]: %s", length(msgs), commaq(msgs)))
   f_try(f, {
     if (inherits(f, "UniprocessFuture")) {
       stopifnot(identical(msgs, c("IM1\n", "IW", "IM2\n")))
@@ -93,7 +93,7 @@ for (ss in seq_along(strategies)) {
     r <- resolved(f)
   })
   message("  result: ", r)
-  message(sprintf("  msgs [n=%d]: %s", length(msgs), paste(sQuote(msgs), collapse = ", ")))
+  message(sprintf("  msgs [n=%d]: %s", length(msgs), commaq(msgs)))
   f_try(f, {
     if (inherits(f, "MultiprocessFuture")) {
       stopifnot(identical(msgs, c("IM1\n", "IW", "IM2\n")))
@@ -106,7 +106,7 @@ for (ss in seq_along(strategies)) {
   msgs <- recordMessages({
     f <- resolve(f)
   })
-  message(sprintf("  msgs [n=%d]: %s", length(msgs), paste(sQuote(msgs), collapse = ", ")))
+  message(sprintf("  msgs [n=%d]: %s", length(msgs), commaq(msgs)))
   f_try(f, {
     stopifnot(length(msgs) == 0L)
   })
@@ -115,7 +115,7 @@ for (ss in seq_along(strategies)) {
   msgs <- recordMessages({
     f <- resolve(f, result = TRUE)
   })
-  message(sprintf("  msgs [n=%d]: %s", length(msgs), paste(sQuote(msgs), collapse = ", ")))
+  message(sprintf("  msgs [n=%d]: %s", length(msgs), commaq(msgs)))
   f_try(f, {
     if (inherits(f, c("UniprocessFuture", "MultiprocessFuture"))) {
       stopifnot(length(msgs) == 0L)
@@ -129,7 +129,7 @@ for (ss in seq_along(strategies)) {
     v <- value(f)
   })
   message("  value: ", v)
-  message(sprintf("  msgs [n=%d]: %s", length(msgs), paste(sQuote(msgs), collapse = ", ")))
+  message(sprintf("  msgs [n=%d]: %s", length(msgs), commaq(msgs)))
   f_try(f, {
     if (inherits(f, c("UniprocessFuture", "MultiprocessFuture"))) {
       stopifnot(identical(msgs, "M\n"))
@@ -178,8 +178,8 @@ for (ss in seq_along(strategies)) {
       2L
     }, label = "future-2")
   })
-  message("  class: ", paste(sQuote(class(fs[[1]])), collapse = ", "))
-  message(sprintf("  msgs [n=%d]: %s", length(msgs), paste(sQuote(msgs), collapse = ", ")))
+  message("  class: ", commaq(class(fs[[1]])))
+  message(sprintf("  msgs [n=%d]: %s", length(msgs), commaq(msgs)))
   f_try(fs[[1]], {
     if (inherits(fs[[1]], "UniprocessFuture")) {
       stopifnot(identical(msgs, c("IM1\n", "IW1", "IM2\n", "IW2")))
@@ -193,7 +193,7 @@ for (ss in seq_along(strategies)) {
     rs <- resolved(fs)
   })
   message("  result: ", paste(rs, collapse = ", "))
-  message(sprintf("  msgs [n=%d]: %s", length(msgs), paste(sQuote(msgs), collapse = ", ")))
+  message(sprintf("  msgs [n=%d]: %s", length(msgs), commaq(msgs)))
   f_try(f, {
     if (inherits(f, "MultiprocessFuture")) {
       stopifnot(all(msgs %in% c("IM1\n", "IM2\n", "IW1", "IW2")))
@@ -211,7 +211,7 @@ for (ss in seq_along(strategies)) {
   msgs <- recordMessages({
     fs <- resolve(fs)
   })
-  message(sprintf("  msgs [n=%d]: %s", length(msgs), paste(sQuote(msgs), collapse = ", ")))
+  message(sprintf("  msgs [n=%d]: %s", length(msgs), commaq(msgs)))
   f_try(f, {
     stopifnot(length(msgs) == 0L)
   })
@@ -220,7 +220,7 @@ for (ss in seq_along(strategies)) {
   msgs <- recordMessages({
     fs <- resolve(fs, result = TRUE)
   })
-  message(sprintf("  msgs [n=%d]: %s", length(msgs), paste(sQuote(msgs), collapse = ", ")))
+  message(sprintf("  msgs [n=%d]: %s", length(msgs), commaq(msgs)))
   f_try(f, {
     if (inherits(fs[[1]], c("UniprocessFuture", "MultiprocessFuture", "CallrFuture", "BatchtoolsFuture"))) {
       stopifnot(length(msgs) == 0L)
@@ -234,7 +234,7 @@ for (ss in seq_along(strategies)) {
     vs <- value(fs)
   })
   message("  values: ", paste(vs, collapse = ", "))
-  message(sprintf("  msgs [n=%d]: %s", length(msgs), paste(sQuote(msgs), collapse = ", ")))
+  message(sprintf("  msgs [n=%d]: %s", length(msgs), commaq(msgs)))
   f_try(f, {
     stopifnot(identical(msgs, c("M1\n", "M2\n")))
   })
@@ -244,7 +244,7 @@ for (ss in seq_along(strategies)) {
     vs <- value(fs)
   })
   message("  values: ", paste(vs, collapse = ", "))
-  message(sprintf("  msgs [n=%d]: %s", length(msgs), paste(sQuote(msgs), collapse = ", ")))
+  message(sprintf("  msgs [n=%d]: %s", length(msgs), commaq(msgs)))
   f_try(f, {
     stopifnot(identical(msgs, c("M1\n", "M2\n")))
   })

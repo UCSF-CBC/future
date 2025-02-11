@@ -8,7 +8,6 @@ oenvs <- oenvs0 <- Sys.getenv()
 oopts0 <- options()
 
 covr_testing <- ("covr" %in% loadedNamespaces())
-on_solaris <- grepl("^solaris", R.version$os)
 on_macos <- grepl("^darwin", R.version$os)
 on_githubactions <- as.logical(Sys.getenv("GITHUB_ACTIONS", "FALSE"))
 
@@ -56,7 +55,6 @@ oplan <- future::plan()
 future::plan("sequential")
 
 fullTest <- (Sys.getenv("_R_CHECK_FULL_") != "")
-isWin32 <- (.Platform$OS.type == "windows" && .Platform$r_arch == "i386")
 
 ## Private future functions
 .onLoad <- future:::.onLoad
@@ -69,6 +67,7 @@ gassign <- future:::gassign
 get_future <- future:::get_future
 geval <- future:::geval
 grmall <- future:::grmall
+commaq <- future:::commaq
 hpaste <- future:::hpaste
 importParallel <- future:::importParallel
 mdebug <- future:::mdebug

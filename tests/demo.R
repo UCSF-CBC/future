@@ -15,7 +15,7 @@ message("*** Fibonacci demo of the 'future' package ... DONE")
 
 
 message("*** Mandelbrot demo of the 'future' package ...")
-if (getRversion() >= "3.2.0" && !isWin32) {
+if (getRversion() >= "3.2.0") {
   options(future.demo.mandelbrot.nrow = 2L)
   options(future.demo.mandelbrot.resolution = 50L)
   options(future.demo.mandelbrot.delay = FALSE)

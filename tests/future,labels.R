@@ -4,9 +4,6 @@ message("*** Futures - labels ...")
 
 strategies <- supportedStrategies()
 
-## Speed up CRAN checks: Skip on CRAN Windows 32-bit
-if (!fullTest && isWin32) strategies <- NULL
-
 for (strategy in strategies) {
   message(sprintf("- plan('%s') ...", strategy))
   plan(strategy)

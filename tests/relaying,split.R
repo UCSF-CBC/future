@@ -15,7 +15,7 @@ relay <- recordRelay({
     1L
   })
 })
-message("  class: ", paste(sQuote(class(f)), collapse = ", "))
+message("  class: ", commaq(class(f)))
 stopifnot(length(relay$stdout) == 0L)
 stopifnot(length(relay$msgs) == 0L)
 relay <- recordRelay(v <- value(f))
@@ -34,7 +34,7 @@ relay <- recordRelay({
     1L
   })
 })
-message("  class: ", paste(sQuote(class(f)), collapse = ", "))
+message("  class: ", commaq(class(f)))
 stopifnot(length(relay$stdout) == 0L)
 stopifnot(length(relay$msgs) == 0L)
 relay <- recordRelay(v <- value(f))
@@ -53,7 +53,7 @@ relay <- recordRelay({
     1L
   })
 })
-message("  class: ", paste(sQuote(class(f)), collapse = ", "))
+message("  class: ", commaq(class(f)))
 stopifnot(identical(relay$stdout, "O\n"))
 stopifnot(identical(relay$msgs, "M\n"))
 relay <- recordRelay(v <- value(f))

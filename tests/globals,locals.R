@@ -79,26 +79,7 @@ for (strategy in supportedStrategies()) {
     
     res <- tryCatch({ v <- value(f) }, error = identity)
     print(res)
-    
-    if (isTRUE(as.logical(Sys.getenv("R_CHECK_IDEAL")))) {
-      stopifnot(identical(v, truth))
-    } else if (isTRUE(getOption("future.globals.keepWhere", FALSE))) {
-      message("future.globals.keepWhere=TRUE")
-      if (isTRUE(getOption("future.globals.globalsOf.locals", TRUE))) {
-        message("future.globals.globalsOf.locals=TRUE")
-        if (strategy %in% c("sequential", "multicore")) {
-          stopifnot(identical(v, truth))
-        } else {
-          stopifnot(identical(v, truth))
-        }
-      } else {
-        message("future.globals.globalsOf.locals=FALSE")
-        stopifnot(identical(v, truth))
-      }
-    } else {
-      message("future.globals.keepWhere=FALSE")
-      stopifnot(identical(v, truth))
-    }
+    stopifnot(identical(v, truth))
   })
 
 
@@ -134,13 +115,7 @@ for (strategy in supportedStrategies()) {
     stopifnot(identical(v, truth))
   } else if (isTRUE(getOption("future.globals.keepWhere", FALSE))) {
     message("future.globals.keepWhere=TRUE")
-    if (isTRUE(getOption("future.globals.globalsOf.locals", TRUE))) {
-      message("future.globals.globalsOf.locals=TRUE")
-      stopifnot(identical(v, truth))
-    } else {
-      message("future.globals.globalsOf.locals=FALSE")
-      stopifnot(identical(v, truth))
-    }
+    stopifnot(identical(v, truth))
   } else {
     message("future.globals.keepWhere=FALSE")
     if (isTRUE(getOption("future.globals.globalsOf.locals", TRUE))) {

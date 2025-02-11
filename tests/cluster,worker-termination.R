@@ -10,14 +10,11 @@ Sys.setenv(TMPDIR = tempdir())
 
 message("*** cluster() - terminating worker ...")
 
-message("Library paths: ", paste(sQuote(.libPaths()), collapse = ", "))
+message("Library paths: ", commaq(.libPaths()))
 message("Package path: ", sQuote(system.file(package = "future")))
 message("TMPDIR for parallel workers: ", sQuote(Sys.getenv("TMPDIR")))
 
 types <- "PSOCK"
-
-## Speed up CRAN checks: Skip on CRAN Windows 32-bit
-if (isWin32) types <- NULL
 
 if (supportsMulticore()) types <- c(types, "FORK")
 
@@ -32,36 +29,36 @@ for (type in types) {
 
   ## Crashing FORK:ed processes seems too harsh on R (< 3.3.0)
   if (type != "FORK" || getRversion() >= "3.3.0") {
-  message("*** cluster() - crashed worker ...")
+    message("*** cluster() - crashed worker ...")
+    
+    plan(cluster, workers = cl, .skip = FALSE)
+    x %<-% 42L
+    stopifnot(x == 42L)
+    
+    ## Force R worker to terminate
+    ## It's not safe to use quit() here when using type = "FORK" [1]
+    ## [1] https://stat.ethz.ch/pipermail/r-devel/2021-August/080995.html
+    x %<-% tools::pskill(pid = Sys.getpid())
+    res <- tryCatch(y <- x, error = identity)
+    print(res)
+    stopifnot(
+      inherits(res, "error"),
+      inherits(res, "FutureError")
+    )
   
-  plan(cluster, workers = cl, .skip = FALSE)
-  x %<-% 42L
-  stopifnot(x == 42L)
+    ## Cleanup
+    print(cl)
+    ## FIXME: Why doesn't this work here? It causes the below future to stall.
+    # parallel::stopCluster(cl)
   
-  ## Force R worker to terminate
-  ## It's not safe to use quit() here when using type = "FORK" [1]
-  ## [1] https://stat.ethz.ch/pipermail/r-devel/2021-August/080995.html
-  x %<-% tools::pskill(pid = Sys.getpid())
-  res <- tryCatch(y <- x, error = identity)
-  print(res)
-  stopifnot(
-    inherits(res, "error"),
-    inherits(res, "FutureError")
-  )
-
-  ## Cleanup
-  print(cl)
-  ## FIXME: Why doesn't this work here? It causes the below future to stall.
-  # parallel::stopCluster(cl)
-
-  ## Verify that the reset worked
-  cl <- parallel::makeCluster(1L, type = type, timeout = 60)
-  print(cl)
-  plan(cluster, workers = cl, .skip = FALSE)
-  x %<-% 43L
-  stopifnot(x == 43L)
-  
-  message("*** cluster() - crashed worker ... DONE")
+    ## Verify that the reset worked
+    cl <- parallel::makeCluster(1L, type = type, timeout = 60)
+    print(cl)
+    plan(cluster, workers = cl, .skip = FALSE)
+    x %<-% 43L
+    stopifnot(x == 43L)
+    
+    message("*** cluster() - crashed worker ... DONE")
   } ## if (type != "FORK" || getRversion() >= "3.3.0")
 
   ## Sanity checks
