@@ -1,8 +1,8 @@
 ## revdepcheck results
 
-We checked 414 reverse dependencies (392 from CRAN + 22 from Bioconductor), comparing R CMD check results across CRAN and dev versions of this package.
+We checked 415 reverse dependencies (393 from CRAN + 22 from Bioconductor), comparing R CMD check results across CRAN and dev versions of this package.
 
- * We saw 5 new problems
+ * We saw 4 new problems
  * We failed to check 1 packages
 
 Issues with CRAN packages are summarised below.
@@ -18,9 +18,6 @@ Issues with CRAN packages are summarised below.
 
 * flexFitR
   checking re-building of vignette outputs ... ERROR
-
-* MOSS
-  checking installed package size ... NOTE
 
 * WARDEN
   checking examples ... ERROR

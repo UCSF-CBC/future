@@ -16,10 +16,11 @@ Run `revdepcheck::revdep_details(, "aifeducation")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  5.6Mb
+      installed size is  6.1Mb
       sub-directories of 1Mb or more:
-        R      1.1Mb
+        R      1.5Mb
         data   1.6Mb
+        help   1.0Mb
         libs   1.5Mb
     ```
 
@@ -133,9 +134,8 @@ Run `revdepcheck::revdep_details(, "apsimx")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  7.4Mb
+      installed size is  7.1Mb
       sub-directories of 1Mb or more:
-        R         1.0Mb
         extdata   5.5Mb
     ```
 
@@ -257,7 +257,7 @@ Run `revdepcheck::revdep_details(, "batchtools")` for more info
 
 *   checking dependencies in R code ... NOTE
     ```
-    [c4-n38:641746] OPAL ERROR: Not initialized in file ext2x_client.c at line 112
+    [c4-n5:4042029] OPAL ERROR: Not initialized in file ext2x_client.c at line 112
     --------------------------------------------------------------------------
     The application appears to have been direct launched using "srun",
     but OMPI was not built with SLURM's PMI support and therefore cannot
@@ -375,13 +375,6 @@ Run `revdepcheck::revdep_details(, "bigDM")` for more info
 *   checking package dependencies ... NOTE
     ```
     Package suggested but not available for checking: ‘INLA’
-    ```
-
-*   checking installed package size ... NOTE
-    ```
-      installed size is  5.3Mb
-      sub-directories of 1Mb or more:
-        data   5.0Mb
     ```
 
 *   checking data for non-ASCII characters ... NOTE
@@ -951,7 +944,7 @@ Run `revdepcheck::revdep_details(, "deseats")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  8.6Mb
+      installed size is  8.5Mb
       sub-directories of 1Mb or more:
         libs   7.8Mb
     ```
@@ -974,8 +967,9 @@ Run `revdepcheck::revdep_details(, "dipsaus")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  6.2Mb
+      installed size is  6.7Mb
       sub-directories of 1Mb or more:
+        R      1.0Mb
         libs   4.2Mb
     ```
 
@@ -1130,15 +1124,15 @@ Run `revdepcheck::revdep_details(, "doFuture")` for more info
      ERROR
     Running the tests in ‘tests/foreach_dofuture,globals.R’ failed.
     Last 50 lines of output:
-      [19:43:42.669]  $ x             : int [1:3] 1 2 3
-      [19:43:42.669]  $ ...future.x_ii: num 42
-      [19:43:42.669]  - attr(*, "where")=List of 2
-      [19:43:42.669]   ..$ x             :<environment: R_EmptyEnv> 
+      [01:39:49.651]  $ x             : int [1:3] 1 2 3
+      [01:39:49.651]  $ ...future.x_ii: num 42
+      [01:39:49.651]  - attr(*, "where")=List of 2
+      [01:39:49.651]   ..$ x             :<environment: R_EmptyEnv> 
     ...
-      [19:43:42.706]   ..$ message: chr "'...' used in an incorrect context"
-      [19:43:42.706]   ..$ call   : language doTryCatch(return(expr), name, parentenv, handler)
-      [19:43:42.706]   ..- attr(*, "class")= chr [1:3] "simpleError" "error" "condition"
-      [19:43:42.710] - accumulating results
+      [01:39:49.727]   ..$ message: chr "'...' used in an incorrect context"
+      [01:39:49.727]   ..$ call   : language doTryCatch(return(expr), name, parentenv, handler)
+      [01:39:49.727]   ..- attr(*, "class")= chr [1:3] "simpleError" "error" "condition"
+      [01:39:49.733] - accumulating results
       List of 2
        $ message: chr "'...' used in an incorrect context"
        $ call   : language doTryCatch(return(expr), name, parentenv, handler)
@@ -1165,7 +1159,7 @@ Run `revdepcheck::revdep_details(, "DT")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  6.4Mb
+      installed size is  6.5Mb
       sub-directories of 1Mb or more:
         htmlwidgets   5.6Mb
     ```
@@ -1188,7 +1182,7 @@ Run `revdepcheck::revdep_details(, "EFAtools")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  7.6Mb
+      installed size is  7.5Mb
       sub-directories of 1Mb or more:
         libs   6.2Mb
     ```
@@ -1331,10 +1325,10 @@ Run `revdepcheck::revdep_details(, "fdacluster")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 23.9Mb
+      installed size is 23.5Mb
       sub-directories of 1Mb or more:
-        R      2.1Mb
-        doc    1.6Mb
+        R      1.9Mb
+        doc    1.5Mb
         help   2.1Mb
         libs  17.5Mb
     ```
@@ -1364,7 +1358,7 @@ Run `revdepcheck::revdep_details(, "fect")` for more info
     ```
       installed size is 14.7Mb
       sub-directories of 1Mb or more:
-        libs  13.3Mb
+        libs  13.4Mb
     ```
 
 *   checking dependencies in R code ... NOTE
@@ -1567,10 +1561,10 @@ Run `revdepcheck::revdep_details(, "forecastML")` for more info
 
 <details>
 
-* Version: 0.2.5
+* Version: 0.2.6
 * GitHub: https://github.com/emilioluissaenzguillen/GeDS
 * Source code: https://github.com/cran/GeDS
-* Date/Publication: 2025-01-21 16:30:02 UTC
+* Date/Publication: 2025-02-10 12:30:32 UTC
 * Number of recursive dependencies: 46
 
 Run `revdepcheck::revdep_details(, "GeDS")` for more info
@@ -1694,9 +1688,8 @@ Run `revdepcheck::revdep_details(, "GeoModels")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  6.0Mb
+      installed size is  5.8Mb
       sub-directories of 1Mb or more:
-        R      1.0Mb
         data   1.9Mb
         libs   2.7Mb
     ```
@@ -1793,7 +1786,7 @@ Run `revdepcheck::revdep_details(, "greed")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 38.4Mb
+      installed size is 38.3Mb
       sub-directories of 1Mb or more:
         libs  36.0Mb
     ```
@@ -1962,7 +1955,7 @@ Run `revdepcheck::revdep_details(, "hero")` for more info
 
 *   checking dependencies in R code ... NOTE
     ```
-    [c4-n38:1699206] OPAL ERROR: Not initialized in file ext2x_client.c at line 112
+    [c4-n5:685191] OPAL ERROR: Not initialized in file ext2x_client.c at line 112
     --------------------------------------------------------------------------
     The application appears to have been direct launched using "srun",
     but OMPI was not built with SLURM's PMI support and therefore cannot
@@ -2033,7 +2026,7 @@ Run `revdepcheck::revdep_details(, "httpgd")` for more info
 
 *   checking tests ...
     ```
-      Running ‘testthat.R’/software/c4/cbi/software/_rocky8/R-4.4.2-gcc13/lib64/R/bin/BATCH: line 60: 1755604 Segmentation fault      (core dumped) ${R_HOME}/bin/R -f ${in} ${opts} ${R_BATCH_OPTIONS} > ${out} 2>&1
+      Running ‘testthat.R’/software/c4/cbi/software/_rocky8/R-4.4.2-gcc13/lib64/R/bin/BATCH: line 60: 695104 Segmentation fault      (core dumped) ${R_HOME}/bin/R -f ${in} ${opts} ${R_BATCH_OPTIONS} > ${out} 2>&1
     
      ERROR
     Running the tests in ‘tests/testthat.R’ failed.
@@ -2234,9 +2227,8 @@ Run `revdepcheck::revdep_details(, "ISAnalytics")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  7.8Mb
+      installed size is  7.5Mb
       sub-directories of 1Mb or more:
-        R      1.0Mb
         data   1.4Mb
         doc    3.8Mb
     ```
@@ -2438,29 +2430,6 @@ Run `revdepcheck::revdep_details(, "lidR")` for more info
 
 ## In both
 
-*   checking tests ...
-    ```
-      Running ‘testthat.R’/software/c4/cbi/software/_rocky8/R-4.4.2-gcc13/lib64/R/bin/BATCH: line 60: 2521761 Aborted                 (core dumped) ${R_HOME}/bin/R -f ${in} ${opts} ${R_BATCH_OPTIONS} > ${out} 2>&1
-    
-     ERROR
-    Running the tests in ‘tests/testthat.R’ failed.
-    Complete output:
-      > Sys.setenv("R_TESTS" = "")
-      > 
-      > library(testthat)
-      > library(lidR)
-      > test_check("lidR")
-      Tests using raster: terra 
-      Tests using future: TRUE 
-      Tests using OpenMP thread: 32 
-      Tests using rlas: 1.8.0 
-      OGR: Unsupported geometry type
-      OGR: Unsupported geometry type
-      Chunk 1 of 1 (100%): state ✓
-      terminate called after throwing an instance of 'std::length_error'
-        what():  basic_string::_M_create
-    ```
-
 *   checking installed package size ... NOTE
     ```
       installed size is 19.1Mb
@@ -2556,7 +2525,7 @@ Run `revdepcheck::revdep_details(, "mapme.biodiversity")` for more info
        16.     └─cli::cli_abort(...)
        17.       └─rlang::abort(...)
       
-      [ FAIL 5 | WARN 1 | SKIP 38 | PASS 560 ]
+      [ FAIL 5 | WARN 2 | SKIP 38 | PASS 560 ]
       Error: Test failures
       Execution halted
     ```
@@ -2911,15 +2880,6 @@ Run `revdepcheck::revdep_details(, "MOSS")` for more info
 
 </details>
 
-## Newly broken
-
-*   checking installed package size ... NOTE
-    ```
-      installed size is  5.1Mb
-      sub-directories of 1Mb or more:
-        doc   1.5Mb
-    ```
-
 ## In both
 
 *   checking Rd files ... NOTE
@@ -2978,9 +2938,9 @@ Run `revdepcheck::revdep_details(, "multitool")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  5.4Mb
+      installed size is  5.1Mb
       sub-directories of 1Mb or more:
-        doc   4.7Mb
+        doc   4.3Mb
     ```
 
 # nebula
@@ -3365,9 +3325,9 @@ Run `revdepcheck::revdep_details(, "pgxRpi")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  5.7Mb
+      installed size is  5.4Mb
       sub-directories of 1Mb or more:
-        doc   5.4Mb
+        doc   5.1Mb
     ```
 
 *   checking R code for possible problems ... NOTE
@@ -3986,9 +3946,9 @@ Run `revdepcheck::revdep_details(, "sdmTMB")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 97.7Mb
+      installed size is 97.9Mb
       sub-directories of 1Mb or more:
-        libs  95.8Mb
+        libs  96.1Mb
     ```
 
 # sentopics
@@ -4052,7 +4012,7 @@ Run `revdepcheck::revdep_details(, "Seurat")` for more info
       installed size is 16.1Mb
       sub-directories of 1Mb or more:
         R      1.7Mb
-        libs  13.4Mb
+        libs  13.5Mb
     ```
 
 *   checking Rd cross-references ... NOTE
@@ -4114,10 +4074,10 @@ Run `revdepcheck::revdep_details(, "shapr")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 13.9Mb
+      installed size is 13.3Mb
       sub-directories of 1Mb or more:
         doc    4.2Mb
-        libs   8.5Mb
+        libs   7.8Mb
     ```
 
 *   checking Rd cross-references ... NOTE
@@ -4221,9 +4181,8 @@ Run `revdepcheck::revdep_details(, "sigminer")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  6.9Mb
+      installed size is  6.7Mb
       sub-directories of 1Mb or more:
-        R         1.0Mb
         extdata   1.0Mb
         help      1.7Mb
         libs      1.6Mb
@@ -4626,7 +4585,7 @@ Run `revdepcheck::revdep_details(, "spatialwarnings")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  8.1Mb
+      installed size is  8.0Mb
       sub-directories of 1Mb or more:
         libs   6.7Mb
     ```
@@ -4718,7 +4677,7 @@ Run `revdepcheck::revdep_details(, "spNetwork")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 27.2Mb
+      installed size is 27.1Mb
       sub-directories of 1Mb or more:
         doc       1.1Mb
         extdata   2.6Mb
@@ -4793,11 +4752,11 @@ Run `revdepcheck::revdep_details(, "squat")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 21.8Mb
+      installed size is 19.9Mb
       sub-directories of 1Mb or more:
-        data   1.5Mb
+        data   1.1Mb
         help   1.1Mb
-        libs  19.0Mb
+        libs  17.5Mb
     ```
 
 # ssdtools
@@ -4962,7 +4921,7 @@ Run `revdepcheck::revdep_details(, "synergyfinder")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  6.2Mb
+      installed size is  6.3Mb
       sub-directories of 1Mb or more:
         doc   5.8Mb
     ```
@@ -5121,7 +5080,7 @@ Run `revdepcheck::revdep_details(, "tenm")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  6.0Mb
+      installed size is  5.9Mb
       sub-directories of 1Mb or more:
         extdata   5.0Mb
     ```
@@ -5386,9 +5345,9 @@ Run `revdepcheck::revdep_details(, "tsgarch")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 144.3Mb
+      installed size is 144.2Mb
       sub-directories of 1Mb or more:
-        libs  143.2Mb
+        libs  143.1Mb
     ```
 
 # tsmarch
@@ -5432,9 +5391,8 @@ Run `revdepcheck::revdep_details(, "tsmarch")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 22.0Mb
+      installed size is 21.5Mb
       sub-directories of 1Mb or more:
-        R      1.0Mb
         doc    1.6Mb
         libs  18.5Mb
     ```
@@ -5701,10 +5659,10 @@ Run `revdepcheck::revdep_details(, "wru")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  8.2Mb
+      installed size is  7.5Mb
       sub-directories of 1Mb or more:
-        data   4.0Mb
-        help   2.1Mb
+        data   3.5Mb
+        help   1.9Mb
         libs   1.9Mb
     ```
 
