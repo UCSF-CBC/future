@@ -188,7 +188,7 @@ GlobalEnvFutureCondition <- function(message = NULL, call = NULL, globalenv = gl
   if (is.null(message)) {
     label <- future$label
     if (is.null(label)) label <- "<none>"
-    message <- sprintf("Future (%s) added variables to the global environment. A future expression should never assign variables to the global environment - neither by assign() nor by <<-: [n=%d] %s", label, length(globalenv$added), paste(sQuote(globalenv$added), collapse = ", "))
+    message <- sprintf("Future (%s) added variables to the global environment. A future expression should never assign variables to the global environment - neither by assign() nor by <<-: [n=%d] %s", label, length(globalenv$added), commaq(globalenv$added))
   }
   cond <- FutureCondition(message = message, call = call, uuid = uuid, future = future)
   cond$globalenv <- globalenv

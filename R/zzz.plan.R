@@ -141,7 +141,7 @@ plan <- local({
       clazz <- class(evaluator)[1]
       if (!clazz %in% noplans) next  ## <== sic!
 
-      stop(FutureError(sprintf("Can not use %s in the future plan because it is on the list of future strategies that are not allow per option 'future.plan.disallow': %s", sQuote(clazz), paste(sQuote(noplans), collapse = ", "))))
+      stop(FutureError(sprintf("Can not use %s in the future plan because it is on the list of future strategies that are not allow per option 'future.plan.disallow': %s", sQuote(clazz), commaq(noplans))))
     }
   }
 
@@ -184,7 +184,7 @@ plan <- local({
       if (is.function(cleanup)) {
         cleanup()
       } else {
-        stop(FutureError(sprintf("Unknown type of 'cleanup' attribute on current future strategy: %s", sQuote(paste(class(cleanup), collapse = ", ")))))
+        stop(FutureError(sprintf("Unknown type of 'cleanup' attribute on current future strategy: %s", commaq(class(cleanup)))))
       }
     } else {
       ## Backward compatibility for future (<= 1.33.2)
@@ -202,7 +202,7 @@ plan <- local({
       debug <- getOption("future.debug", FALSE)
       if (debug) {
         mdebugf("plan(): plan_init() of %s ...",
-                paste(sQuote(class(evaluator)), collapse = ", "))
+                commaq(class(evaluator)))
         mprint(evaluator)
       }
 
@@ -230,14 +230,14 @@ plan <- local({
         res <- if (is.null(res)) {
           "NULL"
         } else {
-          paste(sQuote(res), collapse = ", ")
+          commaq(res)
         }
         stop(FutureError(sprintf("Initialization of plan() failed, because the value of the test future is not NA as expected: %s", res)))
       }
       
       if (debug) {
         mdebugf("plan(): plan_init() of %s ... DONE",
-                paste(sQuote(class(evaluator)), collapse = ", "))
+                commaq(class(evaluator)))
       }
     }
   } ## plan_init()

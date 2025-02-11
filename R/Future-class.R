@@ -233,8 +233,8 @@ print.Future <- function(x, ...) {
     exclude <- attr(x$conditions, "exclude", exact = TRUE)
     if (length(exclude) == 0) exclude <- "nothing"
     cat(sprintf("Capture condition classes: %s (excluding %s)\n",
-                paste(sQuote(x$conditions), collapse = ", "),
-                paste(sQuote(exclude), collapse = ", ")))
+                commaq(x$conditions),
+                commaq(exclude)))
   } else {
     cat("Capture condition classes: <none>\n")
   }
@@ -259,7 +259,7 @@ print.Future <- function(x, ...) {
   p <- packages(x)
   np <- length(p)
   if (np > 0) {
-    cat(sprintf("Packages: %d packages (%s)\n", np, paste(sQuote(p), collapse = ", ")))
+    cat(sprintf("Packages: %d packages (%s)\n", np, commaq(p)))
   } else {
     cat("Packages: <none>\n")
   }
@@ -311,7 +311,7 @@ print.Future <- function(x, ...) {
   }
   cat(sprintf("Early signaling: %s\n", isTRUE(x$earlySignal)))
   cat(sprintf("Owner process: %s\n", x$owner))
-  cat(sprintf("Class: %s\n", paste(sQuote(class), collapse = ", ")))
+  cat(sprintf("Class: %s\n", commaq(class)))
 } ## print()
 
 
@@ -385,7 +385,7 @@ run.Future <- function(future, ...) {
 
   ## Create temporary future for a specific backend, but don't launch it
   makeFuture <- plan("next")
-  if (debug) mdebug("- Future backend: ", paste(sQuote(class(makeFuture)), collapse = ", "))
+  if (debug) mdebug("- Future backend: ", commaq(class(makeFuture)))
 
   ## AD HOC/WORKAROUND: /HB 2020-12-21
   args <- list(
@@ -418,7 +418,7 @@ run.Future <- function(future, ...) {
     }
   }
 
-  if (debug) mdebug("- Future class: ", paste(sQuote(class(tmpFuture)), collapse = ", "))
+  if (debug) mdebug("- Future class: ", commaq(class(tmpFuture)))
 
   ## AD HOC/SPECIAL:
   ## If 'earlySignal=TRUE' was set explicitly when creating the future,
@@ -687,7 +687,7 @@ getExpression.Future <- local({
     ## Packages needed by the future
     pkgs <- packages(future)
     if (length(pkgs) > 0) {
-      if (debug) mdebugf("Packages needed by the future expression (n = %d): %s", length(pkgs), paste(sQuote(pkgs), collapse = ", "))
+      if (debug) mdebugf("Packages needed by the future expression (n = %d): %s", length(pkgs), commaq(pkgs))
     } else {
       if (debug) mdebug("Packages needed by the future expression (n = 0): <none>")
     }
@@ -711,7 +711,7 @@ getExpression.Future <- local({
       pkgsS <- unique(unlist(pkgsS, use.names = FALSE))
       ## CLEANUP: Only keep those that are loaded in the current session
       pkgsS <- intersect(pkgsS, loadedNamespaces())
-      if (debug) mdebugf("Packages needed by future strategies (n = %d): %s", length(pkgsS), paste(sQuote(pkgsS), collapse = ", "))
+      if (debug) mdebugf("Packages needed by future strategies (n = %d): %s", length(pkgsS), commaq(pkgsS))
       pkgs <- unique(c(pkgs, pkgsS))
     }
 

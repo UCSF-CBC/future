@@ -60,7 +60,7 @@ as_ClusterFuture <- function(future, workers = NULL, ...) {
     workers <- addCovrLibPath(workers)
   }
   if (!inherits(workers, "cluster")) {
-    stopf("Argument 'workers' is not of class 'cluster': %s", paste(sQuote(class(workers)), collapse = ", "))
+    stopf("Argument 'workers' is not of class 'cluster': %s", commaq(class(workers)))
   }
   stop_if_not(length(workers) > 0)
 

@@ -116,7 +116,7 @@ sourceFutureStartupScript <- function(default = c(".future.R", "~/.future.R"), d
     return(character(0L))
   }
   
-  if (debug) mdebug("Future startup scripts considered: ", paste(sQuote(pathnames), collapse = ", "))
+  if (debug) mdebug("Future startup scripts considered: ", commaq(pathnames))
   pathnames <- pathnames[file_test("-f", pathnames)]
 
   ## Nothing to do?
@@ -127,7 +127,7 @@ sourceFutureStartupScript <- function(default = c(".future.R", "~/.future.R"), d
   
   pathname <- pathnames[1]
   if (debug) {
-    mdebugf("Future startup scripts found: %s", paste(sQuote(pathnames), collapse = ", "))
+    mdebugf("Future startup scripts found: %s", commaq(pathnames))
     mdebugf("Future startup script to load: %s", sQuote(pathname))
   }
   

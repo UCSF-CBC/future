@@ -150,7 +150,7 @@ save_rds <- function(object, pathname, ...) {
     ex$message <- msg
     stop(ex)
   })
-  stopifnot(file_test("-f", pathname_tmp))
+  stop_if_not(file_test("-f", pathname_tmp))
 
   res <- file.rename(from = pathname_tmp, to = pathname)
 

@@ -70,18 +70,18 @@ evalFuture <- function(
  
   if (is.function(strategiesR)) {
     if (!inherits(strategiesR, "future")) {
-      stop(FutureEvalError(sprintf("Argument 'strategiesR' is a function, but does not inherit 'future': %s", paste(sQuote(class(strategiesR)), collapse = ", "))))
+      stop(FutureEvalError(sprintf("Argument 'strategiesR' is a function, but does not inherit 'future': %s", commaq(class(strategiesR)))))
     }
   } else if (is.list(strategiesR)) {
     for (kk in seq_along(strategiesR)) {
       strategy <- strategiesR[[kk]]
       if (!inherits(strategy, "future")) {
-        stop(FutureEvalError(sprintf("Element #%d of list 'strategiesR' is a function, but does not inherit 'future': %s", kk, paste(sQuote(class(strategy)), collapse = ", "))))
+        stop(FutureEvalError(sprintf("Element #%d of list 'strategiesR' is a function, but does not inherit 'future': %s", kk, commaq(class(strategy)))))
       }
     }
   } else if (is.character(strategiesR)) {
   } else {
-    stop(FutureEvalError(sprintf("Unknown value of argument 'strategiesR': %s", paste(sQuote(class(strategiesR)), collapse = ", "))))
+    stop(FutureEvalError(sprintf("Unknown value of argument 'strategiesR': %s", commaq(class(strategiesR)))))
   }
 
   ## Start time for future evaluation
@@ -289,7 +289,7 @@ evalFuture <- function(
 
   ## Options forwarded from parent process
   if (length(forwardOptions) > 0) {
-    stopifnot(!is.null(names(forwardOptions)))
+    stop_if_not(!is.null(names(forwardOptions)))
     do.call(options, args = forwardOptions)
   }
 

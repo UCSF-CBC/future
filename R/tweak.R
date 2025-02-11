@@ -82,7 +82,7 @@ tweak.future <- function(strategy, ..., penvir = parent.frame()) {
   untweakable <- getOption("future.tweak.untweakable", untweakable)
   if (any(names %in% untweakable)) {
     untweakable <- intersect(names, untweakable)
-    untweakable <- paste(sQuote(untweakable), collapse = ", ")
+    untweakable <- commaq(untweakable)
     stopf("Detected arguments that must not be set via plan() or tweak(): %s",
          untweakable)
   }
@@ -97,7 +97,7 @@ tweak.future <- function(strategy, ..., penvir = parent.frame()) {
   known <- c(formals, names(formals(future)), tweakable)
   unknown <- setdiff(names, known)
   if (length(unknown) > 0L) {
-    warnf("Detected %d unknown future arguments: %s", length(unknown), paste(sQuote(unknown), collapse = ", "))
+    warnf("Detected %d unknown future arguments: %s", length(unknown), commaq(unknown))
   }
 
   strategy2 <- function(...) NULL

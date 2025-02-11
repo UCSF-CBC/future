@@ -30,7 +30,7 @@ nbrOfWorkers.cluster <- function(evaluator) {
   } else if (inherits(workers, "cluster")) {
     workers <- length(workers)
   } else {
-    stopf("Unsupported type of 'workers' for evaluator of class %s: %s", paste(sQuote(class(evaluator)), collapse = ", "), class(workers)[1])
+    stopf("Unsupported type of 'workers' for evaluator of class %s: %s", commaq(class(evaluator)), class(workers)[1])
   }
   stop_if_not(length(workers) == 1L, !is.na(workers), workers >= 1L, is.finite(workers))
 
@@ -54,7 +54,7 @@ nbrOfWorkers.multiprocess <- function(evaluator) {
   if (is.function(workers)) workers <- workers()
   if (is.numeric(workers)) {
   } else {
-    stopf("Unsupported type of 'workers' for evaluator of class %s: %s", paste(sQuote(class(evaluator)), collapse = ", "), class(workers)[1])
+    stopf("Unsupported type of 'workers' for evaluator of class %s: %s", commaq(class(evaluator)), class(workers)[1])
   }
   stop_if_not(length(workers) == 1L, !is.na(workers), workers >= 1L, is.finite(workers))
 
@@ -72,7 +72,7 @@ nbrOfWorkers.future <- function(evaluator) {
   } else if (is.null(workers)) {
     workers <- Inf
   } else {
-    stopf("Unsupported type of 'workers' for evaluator of class %s: %s", paste(sQuote(class(evaluator)), collapse = ", "), class(workers)[1])
+    stopf("Unsupported type of 'workers' for evaluator of class %s: %s", commaq(class(evaluator)), class(workers)[1])
   }
   stop_if_not(length(workers) == 1L, !is.na(workers), workers >= 1L)
 
@@ -153,7 +153,7 @@ nbrOfFreeWorkers.multicore <- function(evaluator, background = FALSE, ...) {
 
 #' @export
 nbrOfFreeWorkers.multiprocess <- function(evaluator, background = FALSE, ...) {
-  stopf("nbrOfFreeWorkers() is not implemented for this type of future backend (please contacts the maintainer of that backend): %s", paste(sQuote(class(evaluator)), collapse = ", "))
+  stopf("nbrOfFreeWorkers() is not implemented for this type of future backend (please contacts the maintainer of that backend): %s", commaq(class(evaluator)))
 }
 
 #' @export
@@ -163,7 +163,7 @@ nbrOfFreeWorkers.future <- function(evaluator, background = FALSE, ...) {
   workers <- nbrOfWorkers(evaluator)
   if (is.infinite(workers)) return(workers)
 
-  stopf("nbrOfFreeWorkers() is not implemented for this type of future backend (please contacts the maintainer of that backend): %s", paste(sQuote(class(evaluator)), collapse = ", "))
+  stopf("nbrOfFreeWorkers() is not implemented for this type of future backend (please contacts the maintainer of that backend): %s", commaq(class(evaluator)))
 }
 
 

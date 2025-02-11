@@ -262,7 +262,7 @@ requirePackages <- local(function(pkgs) {
       msg <- sprintf("%s, although the package is installed: %s", msg, paste(pkgs, collapse = ", "))
     } else {
       paths <- .libPaths()
-      msg <- sprintf("%s, because the package is not installed in any of the libraries (%s), which contain %d installed packages.", msg, paste(sQuote(paths), collapse = ", "), nrow(data))
+      msg <- sprintf("%s, because the package is not installed in any of the libraries (%s), which contain %d installed packages.", msg, commaq(paths), nrow(data))
     }
 
     stop(msg)

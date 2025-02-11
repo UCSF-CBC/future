@@ -14,10 +14,6 @@ import_parallelly <- function(...) {
 }
 
 
-## Keep until future.batchtools (> 0.11.0) is on CRAN
-inRCmdCheck <- import_parallelly("inRCmdCheck")
-
-
 ## We are currently importing the following non-exported functions:
 ## * cluster futures:
 ##   - parallel:::defaultCluster()  ## non-critical / not really needed /
