@@ -314,7 +314,7 @@ evalFuture <- function(
   ## -----------------------------------------------------------------
   ## Evaluate expression in a local() environment?
   if (local) {
-    tmpl_expr_local <- bquote_compile(local({
+    tmpl_expr_local <- bquote_compile(base::local({
       "# future:::evalFuture(): set convenient name of local environment"
       env <- environment()
       attr(env, "name") <- "future:evalenv"
@@ -400,7 +400,7 @@ evalFuture <- function(
   
   ## Limit nested parallelization
   ## (a) Identify default number of cores - ignoring plan settings
-  ...future.ncores <- local({
+  ...future.ncores <- base::local({
     ans <- NA_integer_
     
     options(parallelly.availableCores.fallback = 1L)
@@ -423,7 +423,7 @@ evalFuture <- function(
 
   if (!is.na(...future.ncores)) {
     ## (b) Identify default number of cores - acknowledging plan settings
-    ...future.ncores <- local({
+    ...future.ncores <- base::local({
       nworkers <- nbrOfWorkers()
       min(c(nworkers, ...future.ncores), na.rm = TRUE)
     })
@@ -518,7 +518,7 @@ evalFuture <- function(
         globalenv = if (globalenv) list(added = setdiff(names(.GlobalEnv), ...future.globalenv.names)) else NULL,
         started = ...future.startTime
       )
-    }, condition = local({
+    }, condition = base::local({
       sysCalls <- function(calls = sys.calls(), from = 1L) {
         calls[seq.int(from = from + skip[1L], to = length(calls) - skip[2L])]
       }
