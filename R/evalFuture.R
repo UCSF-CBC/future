@@ -314,11 +314,11 @@ evalFuture <- function(
   ## -----------------------------------------------------------------
   ## Evaluate expression in a local() environment?
   if (local) {
-    tmpl_expr_local <- bquote_compile(base::local({
+    tmpl_expr_local <- bquote_compile(local({
       "# future:::evalFuture(): set convenient name of local environment"
-      env <- base::environment()
-      base::attr(env, "name") <- "future:evalenv"
-      base::rm(list = "env", inherits = FALSE)
+      env <- environment()
+      attr(env, "name") <- "future:evalenv"
+      rm(list = "env", inherits = FALSE)
       
       .(expr)
     }))
@@ -400,38 +400,38 @@ evalFuture <- function(
   
   ## Limit nested parallelization
   ## (a) Identify default number of cores - ignoring plan settings
-  ...future.ncores <- base::local({
+  ...future.ncores <- local({
     ans <- NA_integer_
     
-    base::options(parallelly.availableCores.fallback = 1L)
-    ncores <- parallelly::availableCores(which = "all")
+    options(parallelly.availableCores.fallback = 1L)
+    ncores <- availableCores(which = "all")
     ncores <- ncores[ncores != ncores["system"]]
-    ncores <- ncores[base::setdiff(base::names(ncores), base::c("_R_CHECK_LIMIT_CORES_", "Bioconductor"))]
-    if (base::length(ncores) > 0) {
-      if (base::length(ncores) > 1) {
-        ncores <- ncores[base::setdiff(base::names(ncores), "fallback")]
+    ncores <- ncores[setdiff(names(ncores), c("_R_CHECK_LIMIT_CORES_", "Bioconductor"))]
+    if (length(ncores) > 0) {
+      if (length(ncores) > 1) {
+        ncores <- ncores[setdiff(names(ncores), "fallback")]
       }
-      if (base::length(ncores) > 0) {
-        ans <- base::min(ncores, na.rm = TRUE)
+      if (length(ncores) > 0) {
+        ans <- min(ncores, na.rm = TRUE)
       }
     }
     ans
   })
 
   ## Use the next-level-down ("popped") future strategy
-  future::plan(strategiesR, .cleanup = FALSE, .init = FALSE)
+  plan(strategiesR, .cleanup = FALSE, .init = FALSE)
 
   if (!is.na(...future.ncores)) {
     ## (b) Identify default number of cores - acknowledging plan settings
-    ...future.ncores <- base::local({
-      nworkers <- future::nbrOfWorkers()
-      base::min(base::c(nworkers, ...future.ncores), na.rm = TRUE)
+    ...future.ncores <- local({
+      nworkers <- nbrOfWorkers()
+      min(c(nworkers, ...future.ncores), na.rm = TRUE)
     })
   }
 
   if (!is.na(...future.ncores)) {
-    ...future.options.ncores <- base::options(mc.cores = ...future.ncores)
-    base::on.exit(base::options(...future.options.ncores), add = TRUE)
+    ...future.options.ncores <- options(mc.cores = ...future.ncores)
+    on.exit(options(...future.options.ncores), add = TRUE)
   }
   
 
@@ -518,7 +518,7 @@ evalFuture <- function(
         globalenv = if (globalenv) list(added = setdiff(names(.GlobalEnv), ...future.globalenv.names)) else NULL,
         started = ...future.startTime
       )
-    }, condition = base::local({
+    }, condition = local({
       sysCalls <- function(calls = sys.calls(), from = 1L) {
         calls[seq.int(from = from + skip[1L], to = length(calls) - skip[2L])]
       }
