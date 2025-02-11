@@ -452,8 +452,8 @@ evalFuture <- function(
   if (length(globals) > 0) {
     ## Preserve globals in all environments until the global environment
     names <- names(globals)
-    envs <- list()
-    oldEnvs <- list()
+    currEnvs <- list()
+    pastEnvs <- list()
     env <- globalenv()
     repeat {
       if (identical(env, emptyenv())) break
@@ -473,8 +473,8 @@ evalFuture <- function(
           }, error = identity)
         }
       }
-      envs <- c(envs, env)
-      oldEnvs <- c(oldEnvs, oldEnv)
+      currEnvs <- c(currEnvs, env)
+      pastEnvs <- c(pastEnvs, oldEnv)
       if (identical(env, globalenv())) break
       env <- parent.env(env)
     }
@@ -483,9 +483,9 @@ evalFuture <- function(
       ## Remove globals from the global environment
       rm(list = names(globals), envir = genv, inherits = FALSE)
       ## Restore objects in all modified environments
-      for (ee in seq_along(envs)) {
-        oldEnv <- oldEnvs[[ee]]
-        env <- envs[[ee]]
+      for (ee in seq_along(currEnvs)) {
+        oldEnv <- pastEnvs[[ee]]
+        env <- currEnvs[[ee]]
         for (name in names(oldEnv)) {
           value <- get(name, envir = oldEnv, inherits = FALSE)
           assign(name, value = value, envir = env, inherits = FALSE)
