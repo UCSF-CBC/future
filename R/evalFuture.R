@@ -13,16 +13,16 @@ evalFuture <- function(
     ),
     capture = list(
       stdout = TRUE,
-      conditionClasses = character(0L)
+      split = FALSE,
+      conditionClasses = character(0L),
+      immediateConditionClasses = character(0L)
     ),
     context = list(
+      backendPackages = character(0L),
       strategiesR = NULL,
-      threads = NA_integer_
+      threads = NA_integer_,
+      forwardOptions = NULL
     ),
-    split = FALSE,
-    immediateConditionClasses = character(0L),
-    forwardOptions = NULL,
-    local = FALSE,
     envir = parent.frame(),
     cleanup = TRUE) {
   expr <- core$expr
@@ -31,12 +31,22 @@ evalFuture <- function(
   seed <- core$seed
 
   stdout <- capture$stdout
+  split <- capture$split
   if (is.null(stdout)) stdout <- TRUE
   conditionClasses <- capture$conditionClasses
-
+  immediateConditionClasses <- capture$immediateConditionClasses
+  
+  backendPackages <- context$backendPackages
   strategiesR <- context$strategiesR
   threads <- context$threads
+  forwardOptions <- context$forwardOptions
   if (is.null(threads)) threads <- NA_integer_
+  if (length(forwardOptions) > 0) {
+    stop_if_not(!is.null(names(forwardOptions)))
+  }
+  ## This will eventually always be TRUE
+  local <- context$local
+  if (is.null(local)) local <- TRUE
 
   stop_if_not(
     length(local) == 1L && is.logical(local) && !is.na(local),
@@ -45,6 +55,7 @@ evalFuture <- function(
     is.null(conditionClasses) || (is.character(conditionClasses) && !anyNA(conditionClasses) && all(nzchar(conditionClasses))),
     is.character(immediateConditionClasses) && !anyNA(immediateConditionClasses) && all(nzchar(immediateConditionClasses)),
     is.null(seed) || is_lecyer_cmrg_seed(seed) || (is.logical(seed) && !is.na(seed) || !seed),
+    is.character(backendPackages) && !anyNA(backendPackages) && all(nzchar(backendPackages)),
     length(threads) == 1L && is.integer(threads) && (is.na(threads) || threads >= 1L),
     length(cleanup) == 1L && is.logical(cleanup) && !is.na(cleanup)
   )
@@ -67,7 +78,8 @@ evalFuture <- function(
       threads <- NA_integer_
     }
   }
- 
+
+
   if (is.function(strategiesR)) {
     if (!inherits(strategiesR, "future")) {
       stop(FutureEvalError(sprintf("Argument 'strategiesR' is a function, but does not inherit 'future': %s", commaq(class(strategiesR)))))
@@ -84,8 +96,36 @@ evalFuture <- function(
     stop(FutureEvalError(sprintf("Unknown value of argument 'strategiesR': %s", commaq(class(strategiesR)))))
   }
 
+
+
   ## Start time for future evaluation
   ...future.startTime <- Sys.time()
+
+
+  ## -----------------------------------------------------------------
+  ## Load and attached backend packages
+  ## -----------------------------------------------------------------
+  ## TROUBLESHOOTING: If the package fails to load, then library()
+  ## suppress that error and generates a generic much less
+  ## informative error message.  Because of this, we load the
+  ## namespace first (to get a better error message) and then
+  ## call library(), which attaches the package. /HB 2016-06-16
+  ## NOTE: We use local() here such that 'pkg' is not assigned
+  ##       to the future environment. /HB 2016-07-03
+  if (length(backendPackages) > 0L) {
+    res <- tryCatch({
+      for (pkg in backendPackages) {
+        loadNamespace(pkg)
+        library(pkg, character.only = TRUE)
+      }
+      NULL
+    }, error = identity)
+    if (inherits(res, "error")) {
+      res <- FutureResult(conditions = list(res), started = ...future.startTime)
+      return(res)
+    }
+  }
+
 
 
   ## -----------------------------------------------------------------
@@ -289,7 +329,6 @@ evalFuture <- function(
 
   ## Options forwarded from parent process
   if (length(forwardOptions) > 0) {
-    stop_if_not(!is.null(names(forwardOptions)))
     do.call(options, args = forwardOptions)
   }
 
