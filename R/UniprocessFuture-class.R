@@ -92,14 +92,6 @@ resolved.UniprocessFuture <- function(x, ...) {
   NextMethod()
 }
 
-#' @export
-getExpression.UniprocessFuture <- function(future, immediateConditions = TRUE, ...) {
-  ## Assert that no arguments but the first is passed by position
-  assert_no_positional_args_but_first()
-  NextMethod(immediateConditions = immediateConditions)
-}
-
-
 
 #' @return
 #' `SequentialFuture()` returns an object of class `SequentialProcess`,

@@ -41,10 +41,20 @@ readImmediateConditions <- function(path = immediateConditionsPath(rootPath = ro
   stop_if_not(is.character(include), !anyNA(include))
   stop_if_not(is.logical(remove), length(remove) == 1L, !is.na(remove))
 
+  debug <- getOption("future.debug", FALSE)
+  if (debug) {
+    mdebug("readImmediateCondition() ...")
+    mdebugf("  - path: %s", sQuote(path))
+    on.exit(mdebug("readImmediateCondition() ... DONE"))
+  }
+
   ## Nothing to do?
   if (!file_test("-d", path)) return(list())
   
   files <- dir(path = path, pattern = "[.]rds$", full.names = TRUE)
+  if (debug) {
+    mdebugf(" - Number of RDS files: %d", length(files))
+  }
 
   ## Nothing to do?
   if (length(files) == 0L) return(list())
@@ -82,7 +92,16 @@ readImmediateConditions <- function(path = immediateConditionsPath(rootPath = ro
   conds <- lapply(objs, FUN = .subset2, "condition")
   objs <- NULL
 
+  if (debug) {
+    mdebugf(" - Number of conditions: %d", length(conds))
+    classes <- lapply(conds, FUN = function(x) commaq(class(x)))
+    t <- table(classes)
+    t <- sprintf("%d:%s", t, names(t))
+    mdebugf(" - Condition class sets: %s", paste(t, collapse = "; "))
+  }
+
   ## Resignal conditions
+  mdebugf(" - Resignal conditions ...")
   conds <- lapply(conds, FUN = function(condition) {
     signalCondition(condition)
     ## Increment signal count
@@ -91,11 +110,12 @@ readImmediateConditions <- function(path = immediateConditionsPath(rootPath = ro
     condition$signaled <- signaled + 1L
     condition
   })
+  mdebugf(" - Resignal conditions ... done")
 
   ## Remove files?
   if (remove && length(files) > 0L) file.remove(files)
 
-  conds
+  invisible(conds)
 }
 
 

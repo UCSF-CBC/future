@@ -651,7 +651,7 @@ getFutureCore <- function(future, ...) {
 } # getFutureCore()
 
 
-getFutureCapture <- function(future, immediateConditions = FALSE, ...) {
+getFutureCapture <- function(future, ...) {
   stop_if_not(inherits(future, "Future"))
 
   debug <- getOption("future.debug", FALSE)
@@ -664,13 +664,7 @@ getFutureCapture <- function(future, immediateConditions = FALSE, ...) {
   if (is.null(split)) split <- FALSE
   stop_if_not(is.logical(split), length(split) == 1L, !is.na(split))
 
-  ## Does the backend support immediate relaying of conditions?
-  if (immediateConditions) {
-    immediateConditionClasses <- getOption("future.relay.immediate", "immediateCondition")
-  } else {
-    immediateConditionClasses <- character(0L)
-  }
-
+  immediateConditionClasses <- getOption("future.relay.immediate", "immediateCondition")
   conditionClasses <- future$conditions
   if (length(immediateConditionClasses) > 0 && !is.null(conditionClasses)) {
     exclude <- attr(conditionClasses, "exclude", exact = TRUE)
@@ -682,17 +676,18 @@ getFutureCapture <- function(future, immediateConditions = FALSE, ...) {
   }
 
   capture <- list(
-    stdout                    = future$stdout,
-    split                     = split,
-    conditionClasses          = conditionClasses,
-    immediateConditionClasses = immediateConditionClasses
+    stdout                     = future$stdout,
+    split                      = split,
+    conditionClasses           = conditionClasses,
+    immediateConditionClasses  = immediateConditionClasses,
+    immediateConditionHandlers = list()
   )
 
   capture
 } # getFutureCapture()
 
 
-getFutureContext <- function(future, threads = NA_integer_, mc.cores = NULL, local = TRUE, ...) {
+getFutureContext <- function(future, mc.cores = NULL, local = TRUE, ...) {
   stop_if_not(inherits(future, "Future"))
   
   debug <- getOption("future.debug", FALSE)
@@ -763,7 +758,7 @@ getFutureContext <- function(future, threads = NA_integer_, mc.cores = NULL, loc
 
   ## Create a future context
   context <- list(
-    threads         = threads,
+    threads         = NA_integer_,
     strategiesR     = strategiesR,
     backendPackages = backendPackages,
     forwardOptions  = forwardOptions,
@@ -772,6 +767,107 @@ getFutureContext <- function(future, threads = NA_integer_, mc.cores = NULL, loc
 
   context
 } # getFutureContext()
+
+
+#' @export
+getFutureBackendConfigs <- function(future, ...) {
+  UseMethod("getFutureBackendConfigs")
+}
+
+#' @export
+getFutureBackendConfigs.Future <- function(future, ...) {
+  list()
+}
+
+#' @export
+getFutureBackendConfigs.UniprocessFuture <- function(future, ...) {
+  capture <- list(
+    immediateConditionHandlers = list(
+      immediateCondition = function(cond) {
+        signalCondition(cond)
+      }
+    )
+  )
+
+  list(
+    capture = capture
+  )
+}
+
+
+fileImmediateConditionHandler <- function(cond, ...) {
+  saveImmediateCondition(cond, ...)
+}
+
+
+
+#' @export
+getFutureBackendConfigs.MulticoreFuture <- function(future, ...) {
+  debug <- getOption("future.debug", FALSE)
+  
+  path <- immediateConditionsPath(rootPath = tempdir())
+  
+  capture <- list(
+    immediateConditionHandlers = list(
+      immediateCondition = function(cond) {
+        fileImmediateConditionHandler(cond, path = path)
+      }
+    )
+  )
+
+  ## Disable multi-threading in futures?
+  threads <- NA_integer_
+  multithreading <- getOption("future.fork.multithreading.enable", TRUE)  
+  if (isFALSE(multithreading)) {
+    if (supports_omp_threads(assert = TRUE, debug = debug)) {
+      threads <- 1L
+      if (debug) mdebugf("- Force single-threaded (OpenMP and RcppParallel) processing in %s", class(future)[1])
+    } else {
+      warning(FutureWarning("It is not possible to disable OpenMP multi-threading on this systems", future = future))
+    }
+  }
+
+  context <- list(
+    threads = threads
+  )
+
+  list(
+    capture = capture,
+    context = context
+  )
+}
+
+
+
+#' @export
+getFutureBackendConfigs.ClusterFuture <- function(future, ...) {
+  resignalImmediateConditions <- getOption("future.psock.relay.immediate", TRUE)
+  if (!resignalImmediateConditions) return(list())
+  immediateConditionClasses <- getOption("future.relay.immediate", "immediateCondition")
+  if (length(immediateConditionClasses) == 0L) return(list())
+  
+  ## Does the cluster node communicate with a connection?
+  ## (if not, it's via MPI)
+  workers <- future$workers
+  ## AD HOC/FIXME: Here 'future$node' is yet not assigned, so we look at
+  ## the first worker and assume the others are the same. /HB 2019-10-23
+  cl <- workers[1L]
+  node <- cl[[1L]]
+  con <- node$con
+  if (is.null(con)) return(list())
+
+  capture <- list(
+    immediateConditionHandlers = list(
+      immediateCondition = psockImmediateConditionHandler
+    )
+  )
+
+  list(
+    capture = capture
+  )
+}
+
+
 
 
 #' Inject code for the next type of future to use for nested futures
@@ -818,7 +914,7 @@ getExpression.Future <- local({
     future:::evalFuture(core = .(core), capture = .(capture), context = .(context), cleanup = .(cleanup))
   })
 
-  function(future, expr = future$expr, immediateConditions = FALSE, threads = NA_integer_, ..., cleanup = TRUE) {
+  function(future, expr = future$expr, ..., cleanup = TRUE) {
     debug <- getOption("future.debug", FALSE)
     ##  mdebug("getExpression() ...")
     args <- list(...)
@@ -830,14 +926,29 @@ getExpression.Future <- local({
     }
 
     ## Extract the future core
-    core <- getFutureCore(future)
+    data <- list(
+         core = getFutureCore(future),
+      capture = getFutureCapture(future),
+      context = getFutureContext(future, mc.cores = args$mc.cores, local = args$local)
+    )
 
-    capture <- getFutureCapture(future, immediateConditions = immediateConditions)
+    ## Tweak per backend?
+    configs <- getFutureBackendConfigs(future)
+    for (name in names(configs)) {
+      config <- configs[[name]]
+      current <- data[[name]]
+      for (key in names(config)) {
+        current[[key]] <- config[[key]]
+      }
+      data[[name]] <- current
+    }
 
-    context <- getFutureContext(future, threads = threads,  mc.cores = args$mc.cores, local = args$local)
+    core <- data$core
+    capture <- data$capture
+    context <- data$context
 
     expr <- bquote_apply(tmpl_expr_evaluate)
-    
+
     if (getOption("future.debug", FALSE)) mprint(expr)
   
     ##  mdebug("getExpression() ... DONE")

@@ -15,7 +15,8 @@ evalFuture <- function(
       stdout = TRUE,
       split = FALSE,
       conditionClasses = character(0L),
-      immediateConditionClasses = character(0L)
+      immediateConditionClasses = character(0L),
+      immediateConditionHandlers = list()
     ),
     context = list(
       backendPackages = character(0L),
@@ -25,7 +26,9 @@ evalFuture <- function(
     ),
     envir = parent.frame(),
     cleanup = TRUE) {
+  debug <- FALSE
   expr <- core$expr
+  
   globals <- core$globals
   packages <- core$packages
   seed <- core$seed
@@ -35,7 +38,18 @@ evalFuture <- function(
   if (is.null(stdout)) stdout <- TRUE
   conditionClasses <- capture$conditionClasses
   immediateConditionClasses <- capture$immediateConditionClasses
-  
+  immediateConditionHandlers <- capture$immediateConditionHandlers
+
+  if (!is.null(immediateConditionHandlers)) {
+    stop_if_not(is.list(immediateConditionHandlers))
+    if (length(immediateConditionHandlers) > 0) {
+      stop_if_not(    
+        !is.null(names(immediateConditionHandlers)),
+        all(vapply(immediateConditionHandlers, FUN = is.function, FUN.VALUE = FALSE))
+      )
+    }
+  }
+
   backendPackages <- context$backendPackages
   strategiesR <- context$strategiesR
   threads <- context$threads
@@ -541,7 +555,7 @@ evalFuture <- function(
 
   ...future.frame <- sys.nframe()
   ...future.conditions <- list()
-
+  
   ## NOTE: We don't want to use local(body) w/ on.exit() because
   ## evaluation in a local is optional, cf. argument 'local'.
   ## If this was mandatory, we could.  Instead we use
@@ -563,6 +577,29 @@ evalFuture <- function(
       }
       
       function(cond) {
+        ## Handle immediately?
+        if (length(immediateConditionHandlers) > 0) {
+          ## Handle immediateCondition:s?
+          idxs <- inherits(cond, names(immediateConditionHandlers), which = TRUE)
+          if (length(idxs) > 0 && !identical(idxs, 0L)) {
+            class <- class(cond)[idxs[[1]]]
+            handler <- immediateConditionHandlers[[class]]
+            res <- handler(cond)
+
+            ## Avoid condition from being signaled more than once
+            muffleCondition(cond)
+
+            ## Record condition
+            ...future.conditions[[length(...future.conditions) + 1L]] <<- list(
+              condition = cond,
+              signaled = 1L,
+              foo = TRUE
+            )
+
+            return()
+          }
+        }
+
         is_error <- inherits(cond, "error")
           
         ## Ignore condition?

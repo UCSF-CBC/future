@@ -563,89 +563,47 @@ requestNode <- function(await, workers, timeout = getOption("future.wait.timeout
 
 
 
-#' @export
-getExpression.ClusterFuture <- local({
-  tmpl_expr_conditions <- future:::bquote_compile({
-    "# future:::getExpression.ClusterFuture(): inject code for instant"
-    "# relaying of 'immediateCondition' objects back to the parent R  "
-    "# process via the existing PSOCK channel                         "
-    ...future.makeSendCondition <- base::local({
-      sendCondition <- NULL
 
-      function(frame = 1L) {
-        if (is.function(sendCondition)) return(sendCondition)
+getPsockImmediateConditionHandler <- local({
+  sendCondition <- NULL
 
-        ns <- getNamespace("parallel")
-        if (exists("sendData", mode = "function", envir = ns)) {
-          parallel_sendData <- get("sendData", mode = "function", envir = ns)
+  function(frame = 1L) {
+    if (is.function(sendCondition)) return(sendCondition)
 
-          ## Find the 'master' argument of the worker's {slave,work}Loop()
-          envir <- sys.frame(frame)
-          master <- NULL
-          while (!identical(envir, .GlobalEnv) && !identical(envir, emptyenv())) {
-            if (exists("master", mode = "list", envir = envir, inherits=FALSE)) {
-              master <- get("master", mode = "list", envir = envir, inherits = FALSE)
-              if (inherits(master, c("SOCKnode", "SOCK0node"))) {
-                sendCondition <<- function(cond) {
-                  data <- list(type = "VALUE", value = cond, success = TRUE)
-                  parallel_sendData(master, data)
-                }
-                return(sendCondition)
-              }
+    ns <- getNamespace("parallel")
+    if (exists("sendData", mode = "function", envir = ns)) {
+      parallel_sendData <- get("sendData", mode = "function", envir = ns)
+
+      ## Find the 'master' argument of the worker's {slave,work}Loop()
+      envir <- sys.frame(frame)
+      master <- NULL
+      while (!identical(envir, .GlobalEnv) && !identical(envir, emptyenv())) {
+        if (exists("master", mode = "list", envir = envir, inherits=FALSE)) {
+          master <- get("master", mode = "list", envir = envir, inherits = FALSE)
+          if (inherits(master, c("SOCKnode", "SOCK0node"))) {
+            sendCondition <<- function(cond) {
+              data <- list(type = "VALUE", value = cond, success = TRUE)
+              parallel_sendData(master, data)
             }
-            frame <- frame + 1L
-            envir <- sys.frame(frame)
+            return(sendCondition)
           }
-        }  
-
-        ## Failed to locate 'master' or 'parallel:::sendData()',
-        ## so just ignore conditions
-        sendCondition <<- function(cond) NULL
-      }
-    })
-
-    withCallingHandlers({
-      .(expr)
-    }, immediateCondition = function(cond) {
-      sendCondition <- ...future.makeSendCondition()
-      sendCondition(cond)
-
-      ## Avoid condition from being signaled more than once
-      ## muffleCondition <- future:::muffleCondition()
-      muffleCondition <- .(muffleCondition)
-      muffleCondition(cond)
-    })
-  })
-
-
-  function(future, expr = future$expr, immediateConditions = TRUE, ...) {
-    ## Assert that no arguments but the first is passed by position
-    assert_no_positional_args_but_first()
-  
-    ## Inject code for resignaling immediateCondition:s?
-    if (immediateConditions) {
-      resignalImmediateConditions <- getOption("future.psock.relay.immediate", TRUE)
-      if (resignalImmediateConditions) {
-        immediateConditionClasses <- getOption("future.relay.immediate", "immediateCondition")
-        if (length(immediateConditionClasses) > 0L) {
-          ## Does the cluster node communicate with a connection?
-          ## (if not, it's via MPI)
-          workers <- future$workers
-          ## AD HOC/FIXME: Here 'future$node' is yet not assigned, so we look at
-          ## the first worker and assume the others are the same. /HB 2019-10-23
-          cl <- workers[1L]
-          node <- cl[[1L]]
-          con <- node$con
-          if (!is.null(con)) {
-            expr <- bquote_apply(tmpl_expr_conditions)
-          } ## if (!is.null(con))
         }
+        frame <- frame + 1L
+        envir <- sys.frame(frame)
       }
-    } ## if (resignalImmediateConditions && immediateConditions)
-    
-    NextMethod(expr = expr, immediateConditions = immediateConditions)
+    }  
+
+    ## Failed to locate 'master' or 'parallel:::sendData()',
+    ## so just ignore conditions
+    sendCondition <<- function(cond) NULL
   }
-})
+}) ## getPsockImmediateConditionHandler()
+
+
+psockImmediateConditionHandler <- function(cond) {
+  handler <- getPsockImmediateConditionHandler()
+  handler(cond)
+}
 
 
 send_call <- function(node, ..., when = "send call to", future) {
