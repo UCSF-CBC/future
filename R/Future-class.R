@@ -769,7 +769,6 @@ getFutureContext <- function(future, mc.cores = NULL, local = TRUE, ...) {
 } # getFutureContext()
 
 
-#' @export
 getFutureBackendConfigs <- function(future, ...) {
   UseMethod("getFutureBackendConfigs")
 }
@@ -793,12 +792,6 @@ getFutureBackendConfigs.UniprocessFuture <- function(future, ...) {
     capture = capture
   )
 }
-
-
-fileImmediateConditionHandler <- function(cond, ...) {
-  saveImmediateCondition(cond, ...)
-}
-
 
 
 #' @export

@@ -564,48 +564,6 @@ requestNode <- function(await, workers, timeout = getOption("future.wait.timeout
 
 
 
-getPsockImmediateConditionHandler <- local({
-  sendCondition <- NULL
-
-  function(frame = 1L) {
-    if (is.function(sendCondition)) return(sendCondition)
-
-    ns <- getNamespace("parallel")
-    if (exists("sendData", mode = "function", envir = ns)) {
-      parallel_sendData <- get("sendData", mode = "function", envir = ns)
-
-      ## Find the 'master' argument of the worker's {slave,work}Loop()
-      envir <- sys.frame(frame)
-      master <- NULL
-      while (!identical(envir, .GlobalEnv) && !identical(envir, emptyenv())) {
-        if (exists("master", mode = "list", envir = envir, inherits=FALSE)) {
-          master <- get("master", mode = "list", envir = envir, inherits = FALSE)
-          if (inherits(master, c("SOCKnode", "SOCK0node"))) {
-            sendCondition <<- function(cond) {
-              data <- list(type = "VALUE", value = cond, success = TRUE)
-              parallel_sendData(master, data)
-            }
-            return(sendCondition)
-          }
-        }
-        frame <- frame + 1L
-        envir <- sys.frame(frame)
-      }
-    }  
-
-    ## Failed to locate 'master' or 'parallel:::sendData()',
-    ## so just ignore conditions
-    sendCondition <<- function(cond) NULL
-  }
-}) ## getPsockImmediateConditionHandler()
-
-
-psockImmediateConditionHandler <- function(cond) {
-  handler <- getPsockImmediateConditionHandler()
-  handler(cond)
-}
-
-
 send_call <- function(node, ..., when = "send call to", future) {
   sendCall <- importParallel("sendCall")
   tryCatch({
@@ -730,3 +688,46 @@ post_mortem_cluster_failure <- function(ex, when, node, future) {
 
   msg
 } # post_mortem_cluster_failure()
+
+
+
+getPsockImmediateConditionHandler <- local({
+  sendCondition <- NULL
+
+  function(frame = 1L) {
+    if (is.function(sendCondition)) return(sendCondition)
+
+    ns <- getNamespace("parallel")
+    if (exists("sendData", mode = "function", envir = ns)) {
+      parallel_sendData <- get("sendData", mode = "function", envir = ns)
+
+      ## Find the 'master' argument of the worker's {slave,work}Loop()
+      envir <- sys.frame(frame)
+      master <- NULL
+      while (!identical(envir, .GlobalEnv) && !identical(envir, emptyenv())) {
+        if (exists("master", mode = "list", envir = envir, inherits = FALSE)) {
+          master <- get("master", mode = "list", envir = envir, inherits = FALSE)
+          if (inherits(master, c("SOCKnode", "SOCK0node"))) {
+            sendCondition <<- function(cond) {
+              data <- list(type = "VALUE", value = cond, success = TRUE)
+              parallel_sendData(master, data)
+            }
+            return(sendCondition)
+          }
+        }
+        frame <- frame + 1L
+        envir <- sys.frame(frame)
+      }
+    }  
+
+    ## Failed to locate 'master' or 'parallel:::sendData()',
+    ## so just ignore immedicate conditions
+    sendCondition <<- function(cond) NULL
+  }
+}) ## getPsockImmediateConditionHandler()
+
+
+psockImmediateConditionHandler <- function(cond) {
+  handler <- getPsockImmediateConditionHandler()
+  handler(cond)
+}
